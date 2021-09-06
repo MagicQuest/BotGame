@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta property="og:title" content="bot game" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://magicquest.github.io/games/botgame.html" />
+    <meta property="og:image" content="stuff/img/monybag.png" />
+    <meta property="og:description" content="funny bot game" />
+    <!--meta name="theme-color" content="#FF0000"-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bot game</title>
+    <meta property="og:description" content="one of my multiplayer games" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js">
+
+    </script>
+    <link rel="stylesheet" href="https://magicquest.github.io/clickable.css">
+    <link rel="stylesheet" href="https://magicquest.github.io/font.css">
+    <!--link rel="stylesheet" href="https://magicquest.github.io/"-->
+    <script src="https://magicquest.github.io/oof.js">
+
+    </script>
+    <style>
+        * {
+            color: white;
+        }
+        body {
+            background:url(https://orteil.dashnet.org/cookieclicker/img/darkNoise.jpg);
+            overflow: hidden;
+        }
+        /*h1,input,button {
+            color: white;
+        }*/
+        button {
+            border: 1px solid black;
+            border-radius: 3px;
+            background-image: linear-gradient(0deg, rgba(46,47, 48,1) 0%, rgba(64, 65, 66,1) 100%);
+        }
+        button:hover {
+            background-image: linear-gradient(0deg, rgba(50,51, 52,1) 0%, rgba(64, 65, 66,1) 100%);
+        }
+        button:active {
+            background-image: linear-gradient(0deg,rgba(64, 65, 66,1) 0%,rgba(46,47, 48,1) 100%);
+        }
+        input {
+            background: none;
+            border: 1px solid white;
+            border-radius: 3px;
+            outline:none;
+        }
+        .ccDiv {
+            padding:0px 20px 20px 20px;
+            display: inline-block;
+            border: 3px solid transparent;
+            border-image: url(https://orteil.dashnet.org/cookieclicker/img/frameBorder.png) 3 round;
+            border-radius: 2px;
+            box-shadow: 0px 0px 1px 2px rgba(0,0,0,0.5),0px 2px 4px rgba(0,0,0,0.25),0px 0px 6px 1px rgba(0,0,0,0.5) inset;
+        }
+        .vignette {
+            background: radial-gradient(500px at center,rgba(0,0,0,0), rgb(0,0,0));
+        }
+        #nameDiv {
+            transform: translate(0px, -150px);
+            transition: transform .5s ease-in-out;
+        }
+        #main {
+            transition: opacity .5s ease-in-out;
+        }
+        @keyframes deez {
+            0% {transform: translate(0px, -150px);}
+            100% {transform: translate(0px, 0px);}
+        }
+        @keyframes backward {
+            0% {transform: translate(0px, 0px);}
+            100% {transform: translate(0px, -150px);}
+        }
+        /*#chat::-webkit-scrollbar,*/.framed::-webkit-scrollbar {
+            display: none;
+        }
+        .icon {
+            vertical-align: middle;
+        }
+        .money {
+            display: inline;
+            vertical-align: sub;
+            position: relative;
+        }
+        .money:before {
+            content: '';
+            display: block;
+            width: 48px;
+            height: 48px;
+            position: absolute;
+            top: -12px;
+            background-size: cover;
+            left: -45px;
+        }
+        #money:before {
+            background: url("stuff/img/monybag.png") no-repeat;
+        }
+        #bankMoney:before {
+            background: url("stuff/img/bank.png") no-repeat;
+        }
+        .smallIcon {
+            position: relative;
+            display: inline-block;
+        }
+        .bag:before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 24px;
+            position: absolute;
+            top: -4px;
+            background: url("stuff/img/monybag.png");
+            background-size: cover;
+            left: -25px;
+        }
+        .bank:before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 24px;
+            position: absolute;
+            top: -4px;
+            background: url("stuff/img/bank.png");
+            background-size: cover;
+            left: -25px;
+        }
+    </style>
+    <style>
+        /*#note {
+            position: relative;
+            overflow-y: hidden;
+            width: 270px;
+            height: 65px;
+            padding-right: 16px;
+            padding-bottom: 8px;
+            left: -18px;
+            padding: 4px 8px;
+            margin: 4px;
+            border: 3px solid transparent;
+            border-image: url(https://orteil.dashnet.org/cookieclicker/img/frameBorder.png) 3 round;
+            border-radius: 2px;
+            box-shadow: 0px 0px 1px 2px rgba(0,0,0,0.5),0px 2px 4px rgba(0,0,0,0.25),0px 0px 6px 1px rgba(0,0,0,0.5) inset;
+            -webkit-transition: opacity 0.1s ease-out;
+            -moz-transition: opacity 0.1s ease-out;
+            -ms-transition: opacity 0.1s ease-out;
+            -o-transition: opacity 0.1s ease-out;
+            transition: opacity 0.1s ease-out;
+            background: #000 url(https://orteil.dashnet.org/cookieclicker/img/darkNoise.jpg);
+            background-image: url(https://orteil.dashnet.org/cookieclicker/img/shadedBordersSoft.png),url(https://orteil.dashnet.org/cookieclicker/img/darkNoise.jpg);
+            background-size: 100% 100%,auto;
+            background-color: #000;
+            border-radius: 2px;
+            box-shadow: 0px 0px 1px 2px rgba(0,0,0,0.5),0px 2px 4px rgba(0,0,0,0.25),0px 0px 2px 2px #000 inset,0px 1px 0px 1px rgba(255,255,255,0.5) inset;
+            text-shadow: 0px 1px 1px #000;
+            color: #ccc;
+            line-height: 100%;
+        }*/
+        .close {
+            position: absolute;
+            top: -5px;
+            right: 0px;
+            padding: 4px;
+            margin-top: 4px;
+            font-weight: bold;
+            font-size: 16px;
+            text-shadow: 0px 0px 2px #000,0px 0px 1px #000;
+            cursor: pointer;
+            font-family: Comic Sans MS;
+            padding: 1px 8px 7px 8px;
+            z-index: 4;
+            color: #ccc;
+        }
+        #notes {
+            position: absolute;
+            left: 50%;
+            margin-left: -185px;
+            bottom: 0px;
+            z-index: 3;
+        }
+        .line {
+            background: linear-gradient(to right,rgba(255,255,255,0),rgba(255,255,255,0.25),rgba(255,255,255,0));
+            height: 1px;
+            width: 90%;
+            margin: 6px auto;
+            position: relative;
+        }
+        .line:before,.line:after {
+            content: '';
+            display: block;
+            background: linear-gradient(to right,rgba(0,0,0,0),rgba(0,0,0,0.25),rgba(0,0,0,0));
+            height: 1px;
+            width: 90%;
+            position: absolute;
+            left: 0px;
+            bottom: 1px;
+        }
+        .line:after {
+            bottom:-1px;
+        }
+        /*.icon2 {
+            float: left;
+            margin-left: -4px;
+            background-image: url(https://orteil.dashnet.org/cookieclicker/img/icons.png?v=2.031);
+            width: 48px;
+            height: 48px;
+            display: inline-block;
+            margin: 0px 4px;
+        }*/
+
+        #tooltip,.tooltip {
+            position: relative;
+            -webkit-transition: none;
+            -moz-transition: none;
+            -ms-transition: none;
+            -o-transition: none;
+            transition: none;
+            /*pointer-events: none;*/
+            opacity: 1;
+        }
+        .framed, a.option {
+            padding: 4px 8px;
+            margin: 4px;
+            border: 3px solid transparent;
+            border-image: url(stuff/img/border2.png) 3 round;
+            border-radius: 2px;
+            box-shadow: 0px 0px 1px 2px rgba(0,0,0,0.5),0px 2px 4px rgba(0,0,0,0.25),0px 0px 6px 1px rgba(0,0,0,0.5) inset;
+            -webkit-transition: opacity 0.1s ease-out;
+            -moz-transition: opacity 0.1s ease-out;
+            -ms-transition: opacity 0.1s ease-out;
+            -o-transition: opacity 0.1s ease-out;
+            transition: opacity 0.1s ease-out;
+            /* border-color: #dac56e #c07a36 #a44e36 #c07a36; */
+            /* border: 1px solid #e2dd48; */
+            background: #000 url(https://orteil.dashnet.org/cookieclicker/img/darkNoise.jpg);
+            background-image: url(https://orteil.dashnet.org/cookieclicker/img/shadedBordersSoft.png),url(https://orteil.dashnet.org/cookieclicker/img/darkNoise.jpg);
+            background-size: 100% 100%,auto;
+            background-color: #000;
+            border-radius: 2px;
+            box-shadow: 0px 0px 1px 2px rgb(0 0 0 / 50%), 0px 2px 4px rgb(0 0 0 / 25%), 0px 0px 2px 2px #000 inset, 0px 1px 0px 1px rgb(255 255 255 / 50%) inset;
+            text-shadow: 0px 1px 1px #000;
+            color: #ccc;
+            line-height: 100%;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .price {
+            font-weight: bold;
+            color: #6f6;
+            padding-left: 18px;
+            padding-right: 10px;
+            position: relative;
+        }
+        .framed .name {
+            font-weight: bold;
+            font-size: 110%;
+            color: #fff;
+            margin: 2px 0px;
+            text-shadow: 0px 0px 2px rgba(255,255,255,0.3);
+        }
+        .tag {
+            display: inline-block;
+            font-family: Arial;
+            font-size: 10px;
+        }
+        .framed p {
+            display: block;
+            position: relative;
+            text-align: right;
+            margin-top: 8px;
+            font-style: italic;
+            color: rgba(255,255,255,0.5);
+            font-size: 11.5px;
+            font-family: Georgia;
+            line-height: 135%;
+        }
+        #tooltipAnchor {
+            position: absolute;
+            z-index: 3;
+        }
+        #embedAnchor {
+            position: absolute;
+            left: 50%;
+            top: 125px;
+            z-index: 4;
+            display: none;
+            width: 0px;
+            height: 0px;
+        }
+        #embed {
+            position: relative;
+            overflow: hidden;
+            width: 250px;
+            padding: 16px;
+            margin-left: -18px;
+            left: -125px;
+            text-align: center;
+        }
+        #embed h3 {
+            color: #ece2b6;
+            text-shadow: 0px 1px 0px #733726,0px 2px 0px #875626,0px 2px 1px #000,0px 2px 3px #000;
+            font-family: Georgia,serif;
+            font-size: 15px;
+            text-align: center;
+            font-weight: bold;
+            position: relative;
+            font-variant: small-caps;
+            display: inline-block;
+        }
+        #embed h3:before {
+            background: url("stuff/img/featherLeft.png") no-repeat;
+            left: -39px;
+        }
+        #embed h3:before, #embed h3:after {
+            content: '';
+            display: block;
+            width: 39px;
+            height: 23px;
+            position: absolute;
+            top: -4px;
+        }
+        #embed h3:after {
+            background: url("stuff/img/featherRight.png") no-repeat;
+            right: -39px;
+        }
+        #embedContent {
+            margin-top: -8px;
+        }
+        #embedContent h3 {
+            margin-bottom: 6px;
+        }
+        .framed .block {
+            padding: 8px;
+            margin: 2px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0px 0px 1px #000,0px 0px 1px #000 inset;
+        }
+        .optionBox {
+            text-align: center;
+            clear: both;
+            margin-bottom: -12px;
+        }
+        a.option {
+            border: 1px solid #e2dd48;
+            border-color: #ece2b6 #875526 #733726 #dfbc9a;
+            border-radius: 2px;
+            display: inline-block;
+            margin: 2px 4px 2px 0px;
+            color: #ccc;
+            font-size: 12px;
+            padding: 4px 8px;
+            text-decoration: none;
+            box-shadow: 0px 0px 1px 2px rgba(0,0,0,0.5),0px 2px 4px rgba(0,0,0,0.25),0px 0px 2px 2px #000 inset,0px 1px 0px 1px rgba(255,255,255,0.5) inset;
+        }
+        a, a:visited {
+            text-decoration: underline;
+            cursor: pointer;
+            color: #ccc;
+        }
+        .ccButton {
+            text-align: center;
+            clear: both;
+            margin-bottom: -12px;
+            border: 1px solid #e2dd48;
+            border-color: #ece2b6 #875526 #733726 #dfbc9a;
+            border-radius: 2px;
+            display: inline-block;
+            margin: 2px 4px 2px 0px;
+            color: #ccc;
+            font-size: 12px;
+            padding: 4px 8px;
+            text-decoration: none;
+            box-shadow: 0px 0px 1px 2px rgba(0,0,0,0.5),0px 2px 4px rgba(0,0,0,0.25),0px 0px 2px 2px #000 inset,0px 1px 0px 1px rgba(255,255,255,0.5) inset;
+        }
+        .ccButton:hover,a.option:hover {
+            color: #fff;
+            border-color: #fff;
+        }
+        .ccButton:active,a.option:active {
+            color: #ccc;
+            border-color: #ccc;
+        }
+        .crate {
+            width: 48px;
+            height: 48px;
+            margin: 6px;
+            display: inline-block;
+            cursor: pointer;
+            /* opacity: 0.6; */
+            position: relative;
+            /* background: #000; */
+            background: rgba(0,0,0,0.25);
+            float: left;
+            filter: drop-shadow(0px 3px 2px #000);
+            -webkit-filter: drop-shadow(0px 3px 2px #000);
+        }
+        .crate:before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: -6px;
+            width: 60px;
+            height: 60px;
+            display: block;
+            background: url("stuff/img/border.png");
+            background-position: 0px 0px;
+            z-index: 2;
+        }
+        .crate:hover {
+            top: -1px;
+        }
+        .crate:hover:before {
+            background-position: 60px 0px;
+        }
+        #overlay {
+            z-index: 4;
+            /*background: rgba(0,0,0,.25);*/
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            /*transform: translate3d(0, 0, 0);*/
+        }
+        .closeFrame {
+            position: absolute;
+            right: -22px;
+            bottom: 6px;
+            margin-top: 4px;
+            font-weight: bold;
+            font-size: 16px;
+            text-shadow: 0px 0px 2px #000,0px 0px 1px #000;
+            cursor: pointer;
+            font-family: Comic Sans MS;
+            padding: 1px 8px 7px 8px;
+            z-index: 4;
+            color: #ccc;
+        }
+
+        @property --money {
+            syntax: "<integer>";
+            initial-value: 0;
+            inherits: false;
+        }
+        #money {
+            transition: --money 1s ease;
+            counter-set: money var(--money);
+        }
+        #money::after {
+            content: counter(money);
+        }
+
+        @property --bankMoney {
+            syntax: "<integer>";
+            initial-value: 0;
+            inherits: false;
+        }
+        #bankMoney {
+            transition: --bankMoney 1s ease;
+            counter-set: bankMoney var(--bankMoney);
+        }
+        #bankMoney::after {
+            content: counter(bankMoney);
+        }
+        .tempButton {
+            height: 75px; width: 100px; font-size: 17px;border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="overlay" style="display: none;"> <!-- bro for some reason i can't do onclick :( -->
+
+    </div>
+    <div style="display:none;">
+        <div id="notecopy" class="framed tooltip" style="inset: auto;">
+            <div style="padding:8px 4px;min-width:350px;">
+                <div class="close" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();this.parentElement.parentElement.remove();">x</div>
+                <img src="stuff/img/monybag.png" style="float:left;margin-left:-8px;margin-top:-8px;"></img>
+                <div style="float:right;text-align:left;">
+                    <span class="price">1.3 million</span>
+                </div>
+                <div class="name">Sturdier conveyor belts</div>
+                <div class="tag" style="color:#fff;">[Success]</div>
+                <div class="line"></div>
+                <div class="description" style="font-size: 14px;">Factories are <b>twice</b> as efficient.<p>You're going places.</p></div>
+            </div>
+            <div class="line"></div>
+        </div>
+        <div id="embedcopy" class="framed">
+            <div id="embedContent">
+                <h3>sex request</h3>
+                <div class="block">your dad 😈 wants to have sexs</div>
+                <div class="optionBox">
+                    <a class="option" onclick="clear();new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();">Accept</a>
+                    <a class="option" onclick="clear();new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();">Decline</a>
+                </div>
+            </div>
+            <!--div class="close" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();this.parentElement.remove();">x</div-->
+        </div>
+        <div id="contextcopy" class="framed" style="inset: auto;width: 100px;">
+            <div id="embedContent">
+                <h3 style="margin-top: 0px;">miggas</h3>
+                <br>
+                <h4 class="smallIcon bag" style="margin: 7px;">$21</h4>
+                <br>
+                <h4 class="smallIcon bank" style="margin: 7px;">$69</h4>
+                <div class="line"></div>
+                <div class="optionBox">
+                    <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();clear();createEmbed('Give','How much money you finna give this man ','Custom').addButton('All',()=>{socket.emit('do','give all|'+event.target.parentElement.parentElement.firstElementChild.innerHTML)}).addButton('Custom <input></input>',()=>{console.log('custom');socket.emit('give 10|'+event.target.parentElement.parentElement.firstElementChild.innerHTML)}).finish();">Give</a>
+                    <!--br-->
+                    <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();">Steal</a>
+                    <!--br-->
+                    <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();">Inventory</a>
+                    <!--br-->
+                    <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();socket.emit('do','sex|'+event.target.parentElement.parentElement.firstElementChild.innerHTML);clear();">Sex</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <center>
+        <div class="ccDiv vignette" id="nameDiv">
+            <h1>
+                Enter your name:
+            </h1>
+            <form id="nameForm">
+                <input>
+                <button class="ccButton">
+                    Submit
+                </button>
+            </form>
+        </div>
+    </center>
+    <div id="main" style="opacity: 0; display: none;">
+        <center>
+            <!--img src="stuff/img/monybag.png" class="icon"-->
+            <h1 id="money" class="money">$</h1>
+            <div style="margin: 15px;">
+
+            </div>
+            <!--img src="stuff/img/bank.png" class="icon"-->
+            <h1 id="bankMoney" class="money">$</h1>
+        </center>
+        <div id="tempButtons" style="width: 205px;display: inline-block">
+            <button class="tempButton" onclick="socket.emit('do','hack 1')">
+                get<br>moeny
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','bankHack 1')">
+                get bank moeny
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','beg')">
+                beg
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','gamble all');/*createEmbed('Gambling','How much money do you want to gamble','Custom').addButton('All',()=>{console.log('nigger')}).addButton('Half',()=>{console.log('galfd')}).addButton('Random',()=>{console.log('rando')}).addButton('Custom amoyunt',()=>{console.log('cusotm')}).finish()*/">
+                Gamble All
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','gamble half');">
+                Gamble Half
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','gamble random');">
+                Gamble Random
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','gamble 1');">
+                Gamble 1
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','deposit all');">
+                deposit
+            </button>
+            <button class="tempButton"" onclick="socket.emit('do','deposit 10');">
+                deposit 10
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','withdraw all');">
+                withdraw
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','withdraw 10');">
+                withdraw 10
+            </button>
+        </div>
+        <div style="position: absolute;top:10px;right:10px;transition: .5s top;text-align: center;overflow-y: hidden;">
+            <div id="playersList" class="framed" style="width: 250px;height: 200px;overflow-y: scroll;">
+                
+            </div>
+            <a class="ccButton" style="font-size:25px;text-align: center;width:254px;margin-left:4px;" onclick="this.parentElement.style.top = this.parentElement.style.top == '10px' ? '-220px' : '10px'">Players</a>
+        </div>
+        <div id="crates" style="width: 180px">
+            <div class="crate" style="background-image: url('stuff/img/shop.png');background-position: center;" onclick="crateClick(this);">
+
+            </div>
+            <div class="crate" style="background-image: url('stuff/img/inventory.png');background-position: center;" onclick="crateClick(this);">
+
+            </div>
+        </div>
+        <!--img class="crate" src="stuff/img/border.png" style="cursor: pointer;background-image: url('stuff/img/shop.png');background-position: center;position:absolute;top:10px;left:10px;" onmouseout="let le = document.getElementById('tooltipAnchor'); le.style.display = 'none';" onmousemove="let le = document.getElementById('tooltipAnchor'); le.style.display = 'block'; le.style.inset = `${event.clientY}px auto auto ${event.clientX}px`;"-->
+        <div id="notes">
+            <!--div id="note">
+                <div class="close" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();">x</div>
+                <div class="icon2" style="background-position:-192px -240px;"></div>
+                <div style="padding-top:7px;text-shadow: 0px 1px 1px #000;color: #ccc;">
+                    <h3 style="margin: 0px;color:#ccc">command here</h3>
+                    <div class="line"></div>
+                    <h5 style="margin: 0px;">
+                        <div class="title" style="font-size:18px;margin-top:-2px;color:#a3a3a3">earned</div>
+                        <div class="title" style="font-size:18px;margin-top:-2px;color:#7a7a7a;float:right;font-style: italic;">earned 2</div>
+                    </h5>
+                </div>
+            </div-->
+        </div>
+        <div id="tooltipAnchor" style="display: none;inset: 200px auto auto 920px;pointer-events: none;">
+            <!--div id="tooltip" class="framed" style="inset: auto;">
+                <div style="padding:8px 4px;min-width:350px;">
+                    <img src="stuff/img/monybag.png" style="float:left;margin-left:-8px;margin-top:-8px;"></img>
+                    <div style="float:right;text-align:right;">
+                        <span class="price">1.3 million</span>
+                    </div>
+                    <div class="name">Sturdier conveyor belts</div>
+                    <div class="tag" style="color:#fff;">[Success]</div>
+                    <div class="line"></div>
+                    <div class="description">Factories are <b>twice</b> as efficient.<p>You're going places.</p></div>
+                </div>
+                <div class="line"></div>
+            </div-->
+            
+        </div>
+        <div id="embedAnchor" style="top: 203px; display: block;">
+            
+        </div>
+        <div style="position:absolute;bottom:10px;right:10px;text-align: center;transition: .5s bottom;">
+            <a class="ccButton" style="margin:0;font-size:24px;width:254px;" onclick="this.parentElement.style.bottom = this.parentElement.style.bottom == '10px' ? '-'+(this.parentElement.lastElementChild.getBoundingClientRect().height+5)+'px' : '10px'">Chat</a>
+            <div id="chat" class="framed" style="width: 250px;height: 285px;overflow-y:scroll;" onmousedown="chatDragging = this.style.cursor == 'nw-resize';" onmousemove="if((event.clientX+10 > this.getBoundingClientRect().x && event.clientX < this.getBoundingClientRect().x+10) && (event.clientY+10 > this.getBoundingClientRect().y && event.clientY < this.getBoundingClientRect().y+10)) {this.style.cursor= 'nw-resize';}else{this.style.cursor = '';}">
+
+            </div>
+        </div>
+        <div id="nameAnchor" style="inset: 200px auto auto 920px;position: absolute;z-index: 4;transition: .5s inset;">
+            
+        </div>
+    </div>
+    <script>
+        var socket = io();
+
+        var main = document.getElementById("main");
+        var nameDiv = document.getElementById("nameDiv");
+        var nameForm = document.getElementById("nameForm");
+        //var chatForm = document.getElementById("chatForm");
+        var chat = document.getElementById("chat");
+        var notes = document.getElementById("notes");
+        var embeds = document.getElementById("embedAnchor");
+        //var tooltips = document.getElementById("tooltipAnchor");
+
+        var items;
+        var jobs;
+
+        var chatDragging;
+
+        var mouse = {x: 0, y: 0};
+        var overContext;
+        
+        var playersList = {};
+
+        //var joined = false;
+
+        function updatePlayersList() {
+            console.log(playersList);
+            document.getElementById("playersList").innerHTML = "";
+            for(let player in playersList) {
+                console.log(playersList[player]);
+                let money = playersList[player].split("|")[0];
+                let bank = playersList[player].split("|")[1];
+                document.getElementById("playersList").innerHTML += `<h3 style="margin: 0px;margin-bottom: 5px;"><a onclick="nameClick(event)">${player}</a></h3>
+                <h4 class="smallIcon bag" style="margin: 7px;">$${money}</h4>
+                <br>
+                <h4 class="smallIcon bank" style="margin: 7px;">$${bank}</h4>
+                <div class="line"></div>\n`;
+            }
+        }
+
+        function clear() {
+            document.getElementById("nameAnchor").innerHTML = "";
+            embeds.innerHTML = "";
+            document.getElementById("overlay").style.display = "none";
+            document.getElementById("overlay").style.backgroundColor = "";
+        }
+
+        /*function buttonShit(callback) {
+            new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();
+            clear();
+            callback();
+        }*/
+
+        function createEmbed(name,content,mode) {
+            let leEmbed = document.createElement("div");//document.getElementById("embedcopy").cloneNode();
+            leEmbed.id = "embed";
+            leEmbed.className = "framed";
+            leEmbed.innerHTML = document.getElementById("embedcopy").innerHTML;
+            leEmbed.firstElementChild.firstElementChild.innerHTML = name;
+            leEmbed.firstElementChild.children[1].innerHTML = content;
+            let buttons = leEmbed.firstElementChild.children[2];
+            if(mode == "Ok") {
+                buttons.children[1].remove();
+                buttons.firstElementChild.innerHTML = "Ok";
+            }else if(mode == "YesNo") {
+                buttons.firstElementChild.onclick = ()=>{
+                    new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();
+                    clear();
+                    eval("socket.emit('do','"+info.split("|")[3]+"');");
+                    //socket.emit('do',info.split("|")[3]);
+                };
+                //leEmbed.firstElementChild.children[2].firstElementChild.onclick += `socket.emit("do",${info.split("|")[3]})`
+            }else if(mode == "Custom") {
+                let button = buttons.firstElementChild;
+                buttons.innerHTML = "";
+                return {embed: leEmbed,addButton(name,callback) {
+                    //console.log(button);
+                    let clone = button.cloneNode();
+                    clone.innerHTML = name;
+                    clone.onclick = ()=>{
+                        clear();
+                        new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();
+                        callback();
+                    }//buttonShit(callback);
+                    buttons.appendChild(clone);
+                    return this;
+                },finish() {
+                    embeds.appendChild(leEmbed);
+                    document.getElementById("overlay").style.display = "";
+                    document.getElementById("overlay").style.backgroundColor = "rgba(0,0,0,.25)";
+                    button.remove();
+                }};
+            }
+            console.log(content);
+            embeds.appendChild(leEmbed);
+            document.getElementById("overlay").style.display = "";
+            document.getElementById("overlay").style.backgroundColor = "rgba(0,0,0,.25)";
+        }
+
+        function crateClick(crate) {
+            let name = crate.style.backgroundImage;
+            console.log(crate,name);
+            if(name.includes("shop")) {
+                createEmbed("Shop","item","YesNo");//.addButton("");
+            }
+        }
+
+        document.addEventListener("mousemove",(event)=>{
+            mouse.x = event.clientX;
+            mouse.y = event.clientY;
+            if(chatDragging) {
+                chat.style.width = `${window.innerWidth-event.clientX}px`;
+                chat.style.height = `${window.innerHeight-event.clientY}px`;
+            }
+        });
+
+        document.addEventListener("mouseup",(event)=>{
+            chatDragging = false;
+            //setTimeout(()=>{
+            //    document.getElementById("nameAnchor").innerHTML = "";
+            //},100);
+        });
+
+        document.addEventListener("keydown",(event)=>{
+            if(event.key == "Escape") {
+                clear();
+            }
+        });
+        
+        document.getElementById("overlay").onmousedown = clear;
+
+        /*for(craet of document.getElementById("crates").children) {
+            //.forEach((craet)=>{
+                //console.log(craet.);
+            craet.onclick = ()=>{crateClick(craet)};//(craet);//craet.style.backgroundImage.substring(craet.style.backgroundImage.indexOf("'"),craet.style.backgroundImage.lastIndexOf("'")));
+            //}) 
+        }*/
+        
+
+        setTimeout(()=>{
+            nameDiv.style.transform = "translate(0px,0px)";
+        },1);
+
+        /*chatForm.onsubmit = function(e) {
+            if(get("chat-input").value != "") {
+                if(get("chat-input").value == "gamble") {
+                    gamble("all");
+                }
+                chat.innerHTML += `<div style="background-color:rgba(0,0,0,${chat.childElementCount % 2 == 0 ? .125 : .25})">` + get("chat-input").value + '</div>';
+                chat.scrollTop = chat.scrollHeight;
+                get("chat-input").value = "";
+            }
+            e.preventDefault();
+        }*/
+
+        /*function tick() {
+            if(chatDragging) {
+                chat.style.width = +px;
+            }
+            requestAnimationFrame(tick);
+        }
+
+        requestAnimationFrame(tick);*/
+
+        nameForm.onsubmit = function(e) {
+            if(nameForm.firstElementChild.value != "") {
+                socket.emit("name",nameForm.firstElementChild.value);
+            }
+            e.preventDefault();
+        };
+
+        socket.on("start",function(data) {
+            //console.log(data.name + " joined")
+            console.log(data.players);
+            for(let player in data.players) {
+                let money = data.players[player].split("|")[0];
+                let bank = data.players[player].split("|")[1];
+                playersList[player] = data.players[player];
+                updatePlayersList();
+                /*document.getElementById("playersList").innerHTML += `<h3 style="margin: 0px;margin-bottom: 5px;">${player}</h3>
+                <h4 class="smallIcon bag" style="margin: 7px;">$${money}</h4>
+                <br>
+                <h4 class="smallIcon bank" style="margin: 7px;">$${bank}</h4>
+                <div class="line"></div>\n`;*/
+            }
+            if(nameForm.firstElementChild.value == data.name) {
+                nameDiv.style.transform = "translate(0px,-150px)";
+                document.getElementById("money").style.setProperty('--money',data.money.split("|")[0]);
+                document.getElementById("bankMoney").style.setProperty('--bankMoney',data.money.split("|")[1]);
+                //document.getElementById("money").innerText = "$"+data.money.split("|")[0];
+                //document.getElementById("bankMoney").innerText = "$"+data.money.split("|")[1];
+                joined = true;
+                setTimeout(()=>{
+                    nameDiv.style.display = "none";
+                    main.style.display = "";
+                    //main.style.opacity = 1;
+                },500);
+                setTimeout(()=>{
+                    main.style.opacity = "";
+                },1000);
+            }
+        });
+
+        socket.on("money",(newMoney)=>{
+            //document.getElementById("money").innerText = "$"+newMoney.split("|")[0];
+            //document.getElementById("bankMoney").innerText = "$"+newMoney.split("|")[1];
+            document.getElementById("money").style.setProperty('--money',newMoney.split("|")[0]);
+            document.getElementById("bankMoney").style.setProperty('--bankMoney',newMoney.split("|")[1]);
+        });
+
+        socket.on("do",(info)=>{
+            console.log(info);
+            let leNote = document.createElement("div");//document.getElementById("notecopy").innerHTML
+            leNote.className = "framed tooltip";
+            leNote.style.inset = "auto";
+            leNote.innerHTML = document.getElementById("notecopy").innerHTML;
+            leNote.firstElementChild.children[3].innerHTML = info.split("|")[0];
+            if(info.split("|")[1].includes("&")) {
+                leNote.firstElementChild.lastElementChild.innerHTML = info.split("|")[1].split("&")[0]+`<p>${info.split("|")[1].split("&")[1]}</p>`;
+            }else {
+                if(random(0,25) == 0) {
+                    leNote.firstElementChild.lastElementChild.innerHTML = info.split("|")[1]+"<p>You earned this one, champ</p>";
+                }else {
+                    leNote.firstElementChild.lastElementChild.innerHTML = info.split("|")[1];
+                }
+            }
+            if(info.split("|")[2] == "[Fail]") {
+                leNote.firstElementChild.children[2].firstElementChild.style.color = "#f66";
+            }
+            leNote.firstElementChild.children[4].innerHTML = info.split("|")[2];
+            leNote.firstElementChild.children[2].firstElementChild.innerHTML = info.split("|")[3];
+            if(!notes.innerHTML.includes(`<div class="framed closeFrame" onclick="document.getElementById('notes').innerHTML = '';">x</div>`)) {
+                notes.innerHTML += `<div class="framed closeFrame" onclick="document.getElementById('notes').innerHTML = '';">x</div>`;
+            }
+            notes.appendChild(leNote);
+        });
+
+        socket.on("embed",(info)=>{
+            /*let leEmbed = document.createElement("div");//document.getElementById("notecopy").innerHTML
+            leEmbed.id = "embed";
+            leEmbed.className = "framed";
+            leEmbed.innerHTML = document.getElementById("embedcopy").innerHTML;
+            leEmbed.firstElementChild.firstElementChild.innerHTML = info.split("|")[0];
+            leEmbed.firstElementChild.children[1].innerHTML = info.split("|")[1];
+            if(info.split("|")[2] == "Ok") {
+                leEmbed.firstElementChild.children[2].children[1].remove();
+                leEmbed.firstElementChild.children[2].firstElementChild.innerHTML = "Ok";
+            }else if(info.split("|")[2] == "YesNo") {
+                leEmbed.firstElementChild.children[2].firstElementChild.onclick = ()=>{
+                    new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();
+                    leEmbed.remove();
+                    eval("socket.emit('do','"+info.split("|")[3]+"');")
+                };
+                //leEmbed.firstElementChild.children[2].firstElementChild.onclick += `socket.emit("do",${info.split("|")[3]})`
+            }
+            embeds.appendChild(leEmbed);
+            document.getElementById("overlay").style.display = "";
+            document.getElementById("overlay").style.backgroundColor = "rgba(0,0,0,.25)";*/
+            createEmbed(info.split("|")[0],info.split("|")[1],info.split("|")[2]);
+        });
+        //socket.on("doFail",(info)=>{
+        //    console.log(info);
+        //});
+        socket.on("chat",(message)=>{
+            //console.log(message);
+            chat.innerHTML += message + "<div class='line'></div>";
+            chat.scrollTop = chat.scrollHeight;
+        });
+
+        socket.on("joined",(info)=>{
+            console.log(info);
+            let name = info.split("|")[0];
+            let money = info.split("|")[1];
+            let bank = info.split("|")[2];
+            chat.innerHTML += `<a onclick="nameClick(event)">${name}</a> just joined<div class='line'></div>`;
+            playersList[name] = info.slice(info.indexOf("|")+1);
+            updatePlayersList();
+            /*document.getElementById("playersList").innerHTML += `<h3 style="margin: 0px;margin-bottom: 5px;">${name}</h3>
+            <h4 class="smallIcon bag" style="margin: 7px;">$${money}</h4>
+            <br>
+            <h4 class="smallIcon bank" style="margin: 7px;">$${bank}</h4>
+            <div class="line"></div>\n`;*/
+        });
+
+        //socket.on('reset',)
+
+        function nameClick(event/*,bruh*/) {
+            let element = event.target;
+            socket.emit("do","money|"+element.innerHTML,(money)=>{
+                document.getElementById("nameAnchor").innerHTML = "";
+                let leEmbed = document.createElement("div");
+                let bank = money.split("|")[1];
+                money = money.split("|")[0];
+                //leEmbed.onmouseover = ()=>{
+                //    document.getElementById("nameAnchor").innerHTML = "";
+                //};
+                leEmbed.id = "embed";
+                leEmbed.className = "framed";
+                leEmbed.style.inset = "auto";
+                leEmbed.style.width = "100px";
+                leEmbed.innerHTML = document.getElementById("contextcopy").innerHTML;
+                leEmbed.firstElementChild.firstElementChild.innerHTML = element.innerHTML;
+                leEmbed.firstElementChild.children[2].innerHTML = `$${money}`;
+                leEmbed.firstElementChild.children[4].innerHTML = `$${bank}`;
+                //leEmbed.firstElementChild.children[6].children[3].onclick = (event)=>{
+                //    socket.emit("do","sex|"+event.target.parentElement.parentElement.firstElementChild.innerHTML);
+                //};
+                document.getElementById("nameAnchor").appendChild(leEmbed);
+                //console.log((!bruh) ? leEmbed.getBoundingClientRect().height/2 : 0);
+                document.getElementById("nameAnchor").style.inset = `${mouse.y}px auto auto ${mouse.x-leEmbed.getBoundingClientRect().width}px`
+                //leEmbed.firstElementChild.children[6].
+                document.getElementById("overlay").style.display = "";
+                //document.getElementById("overlay").onclick = ()=>{
+                //    clear();
+                //}
+            });
+        }
+        /*socket.on("playerStatus",(status)=>{
+            let left = status.split("|")[0] == 'left';
+            document.getElementById("chat").innerHTML += status.split("|")[1] + "<div class='line'></div>";
+            if(!left) {
+                document.getElementById("playersList").innerHTML += `<h3 style="margin: 0px;margin-bottom: 5px;">${status.split("|")[2].split("&")[0]}</h3>
+                <h4 class="smallIcon bag" style="margin: 7px;">$${status.split("|")[2].split("&")[1]}</h4>
+                <br>
+                <h4 class="smallIcon bank" style="margin: 7px;">$${status.split("|")[2].split("&")[2]}/h4>
+                <div class="line"></div>`;
+            }
+        });*/
+        socket.on("left",(bry)=>{
+            chat.innerHTML += bry + " just left" + "<div class='line'></div>";
+            /*let bruh = [];
+            document.getElementById("playersList").innerHTML.split(`<div class="line"></div>`).forEach((info,i)=>{
+                //console.log(info+"info");
+                if(info.slice(info.indexOf('<h3 style="margin: 0px;margin-bottom: 5px;">')+44,info.indexOf("</h3>")) != bry) {
+                    bruh[i] = info;
+                }
+                //console.log(info.slice(info.indexOf('<h3 style="margin: 0px;margin-bottom: 5px;">')+44,info.indexOf("</h3>")));//+"NIGGERNIGGERNIGGNIERG");
+            });
+            bruh.forEach((bru,i)=>{
+                if(bru == "\n") {
+                    delete bruh[i];
+                }else {
+                    bruh[i] += `<div class="line"></div>`;
+                }
+            });
+            //console.log(bruh);
+            //console.log(bruh.join('<div class="line"></div>'));
+            document.getElementById("playersList").innerHTML = bruh.join("");//bruh.join('<div class="line"></div>');*/
+            delete playersList[bry];
+            updatePlayersList();
+        });
+        socket.on("moneyUpdate",(info)=>{
+            console.log(info);
+            /*for(let name in info) {
+                document.getElementById("playersList").innerHTML.split(`<div class="line"></div>`).forEach((e,i)=>{
+                    //console.log(info+"info");
+                    if(e.slice(e.indexOf('<h3 style="margin: 0px;margin-bottom: 5px;">')+44,e.indexOf("</h3>")) != name) {
+                        bruh[i] = info;
+                    }
+                    //console.log(info.slice(info.indexOf('<h3 style="margin: 0px;margin-bottom: 5px;">')+44,info.indexOf("</h3>")));//+"NIGGERNIGGERNIGGNIERG");
+                });
+            }*/
+            for(let name in info) {
+                playersList[name] = info[name];
+                updatePlayersList();
+            }
+        });
+        /*socket.on("items",(items)=>{
+            console.log(items);
+        });*/
+    </script>
+</body>
+</html>
