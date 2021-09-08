@@ -25,7 +25,7 @@
             color: white;
         }
         body {
-            background:url(https://orteil.dashnet.org/cookieclicker/img/darkNoise.jpg);
+            background:url(stuff/img/darkNoise.jpg);
             overflow: hidden;
         }
         /*h1,input,button {
@@ -52,7 +52,7 @@
             padding:0px 20px 20px 20px;
             display: inline-block;
             border: 3px solid transparent;
-            border-image: url(https://orteil.dashnet.org/cookieclicker/img/frameBorder.png) 3 round;
+            border-image: url(stuff/img/frameBorder.png) 3 round;
             border-radius: 2px;
             box-shadow: 0px 0px 1px 2px rgba(0,0,0,0.5),0px 2px 4px rgba(0,0,0,0.25),0px 0px 6px 1px rgba(0,0,0,0.5) inset;
         }
@@ -224,7 +224,7 @@
             padding: 4px 8px;
             margin: 4px;
             border: 3px solid transparent;
-            border-image: url(stuff/img/border2.png) 3 round;
+            border-image: url(stuff/img/frameBorder.png) 3 round;
             border-radius: 2px;
             box-shadow: 0px 0px 1px 2px rgba(0,0,0,0.5),0px 2px 4px rgba(0,0,0,0.25),0px 0px 6px 1px rgba(0,0,0,0.5) inset;
             -webkit-transition: opacity 0.1s ease-out;
@@ -234,8 +234,8 @@
             transition: opacity 0.1s ease-out;
             /* border-color: #dac56e #c07a36 #a44e36 #c07a36; */
             /* border: 1px solid #e2dd48; */
-            background: #000 url(https://orteil.dashnet.org/cookieclicker/img/darkNoise.jpg);
-            background-image: url(https://orteil.dashnet.org/cookieclicker/img/shadedBordersSoft.png),url(https://orteil.dashnet.org/cookieclicker/img/darkNoise.jpg);
+            background: #000 url(stuff/img/darkNoise.jpg);
+            background-image: url(stuff/img/shadedBordersSoft.png),url(stuff/img/darkNoise.jpg);
             background-size: 100% 100%,auto;
             background-color: #000;
             border-radius: 2px;
@@ -440,33 +440,21 @@
             color: #ccc;
         }
 
-        @property --money {
-            syntax: "<integer>";
-            initial-value: 0;
-            inherits: false;
-        }
-        #money {
-            transition: --money 1s ease;
-            counter-set: money var(--money);
-        }
-        #money::after {
-            content: counter(money);
-        }
-
-        @property --bankMoney {
-            syntax: "<integer>";
-            initial-value: 0;
-            inherits: false;
-        }
-        #bankMoney {
-            transition: --bankMoney 1s ease;
-            counter-set: bankMoney var(--bankMoney);
-        }
-        #bankMoney::after {
-            content: counter(bankMoney);
-        }
         .tempButton {
             height: 75px; width: 100px; font-size: 17px;border-radius: 10px;
+        }
+
+        .pieTimer {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 48px;
+            height: 48px;
+            background: url('stuff/img/pieFill.png');
+            /* background-size: 864px 384px; */
+            /* background-size: 864px 384px; */
+            z-index: 3;
+            opacity: 0.5;
         }
     </style>
 </head>
@@ -511,11 +499,11 @@
                 <div class="optionBox">
                     <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();clear();createEmbed('Give','How much money you finna give this man ','Custom').addButton('All',()=>{socket.emit('do','give all|'+event.target.parentElement.parentElement.firstElementChild.innerHTML)}).addButton('Custom <input></input>',()=>{console.log('custom');socket.emit('give 10|'+event.target.parentElement.parentElement.firstElementChild.innerHTML)}).finish();">Give</a>
                     <!--br-->
-                    <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();">Steal</a>
+                    <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();console.log(event.target.parentElement.parentElement.firstElementChild.innerHTML);socket.emit('do','steal|'+event.target.parentElement.parentElement.firstElementChild.innerHTML);clear();">Steal</a>
                     <!--br-->
                     <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();">Inventory</a>
                     <!--br-->
-                    <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();socket.emit('do','sex|'+event.target.parentElement.parentElement.firstElementChild.innerHTML);clear();">Sex</a>
+                    <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();console.log(event.target.parentElement.parentElement.firstElementChild.innerHTML);socket.emit('do','sex|'+event.target.parentElement.parentElement.firstElementChild.innerHTML);clear();">Sex</a>
                 </div>
             </div>
         </div>
@@ -590,6 +578,9 @@
             </div>
             <div class="crate" style="background-image: url('stuff/img/inventory.png');background-position: center;" onclick="crateClick(this);">
 
+            </div>
+            <div class="crate" style="background-image: url('stuff/img/jail.png');background-position: center;" onclick="crateClick(this);">
+                <div class="pieTimer" id="jailTimer" style="background-position: 0px 0px;"></div>
             </div>
         </div>
         <!--img class="crate" src="stuff/img/border.png" style="cursor: pointer;background-image: url('stuff/img/shop.png');background-position: center;position:absolute;top:10px;left:10px;" onmouseout="let le = document.getElementById('tooltipAnchor'); le.style.display = 'none';" onmousemove="let le = document.getElementById('tooltipAnchor'); le.style.display = 'block'; le.style.inset = `${event.clientY}px auto auto ${event.clientX}px`;"-->
@@ -688,7 +679,7 @@
             callback();
         }*/
 
-        function createEmbed(name,content,mode) {
+        function createEmbed(name,content,mode,callback) {
             let leEmbed = document.createElement("div");//document.getElementById("embedcopy").cloneNode();
             leEmbed.id = "embed";
             leEmbed.className = "framed";
@@ -699,11 +690,15 @@
             if(mode == "Ok") {
                 buttons.children[1].remove();
                 buttons.firstElementChild.innerHTML = "Ok";
+                buttons.firstElementChild.onclick = ()=>{
+                    new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();
+                    clear();
+                };
             }else if(mode == "YesNo") {
                 buttons.firstElementChild.onclick = ()=>{
                     new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();
                     clear();
-                    eval("socket.emit('do','"+info.split("|")[3]+"');");
+                    callback();
                     //socket.emit('do',info.split("|")[3]);
                 };
                 //leEmbed.firstElementChild.children[2].firstElementChild.onclick += `socket.emit("do",${info.split("|")[3]})`
@@ -741,6 +736,26 @@
                 createEmbed("Shop","item","YesNo");//.addButton("");
             }
         }
+        
+        /*function tick() {
+            if(chatDragging) {
+                chat.style.width = +px;
+            }
+
+            requestAnimationFrame(tick);
+        }
+
+        requestAnimationFrame(tick);*/
+
+        let shit = setInterval(()=>{
+            let jailTimer = document.getElementById("jailTimer");
+            if(jailTimer.style.backgroundPositionX == "-816px" && jailTimer.style.backgroundPositionY == "-336px") {
+                jailTimer.parentElement.remove();
+                clearInterval(shit);
+            }
+            jailTimer.style.backgroundPositionY = jailTimer.style.backgroundPositionX.includes("816") ? parseInt(jailTimer.style.backgroundPositionY) - 48 + "px" : jailTimer.style.backgroundPositionY;
+            jailTimer.style.backgroundPositionX = jailTimer.style.backgroundPositionX.includes("816") ? "0px" : parseInt(jailTimer.style.backgroundPositionX) - 48 + "px";
+        },100);
 
         document.addEventListener("mousemove",(event)=>{
             mouse.x = event.clientX;
@@ -789,15 +804,6 @@
             }
             e.preventDefault();
         }*/
-
-        /*function tick() {
-            if(chatDragging) {
-                chat.style.width = +px;
-            }
-            requestAnimationFrame(tick);
-        }
-
-        requestAnimationFrame(tick);*/
 
         nameForm.onsubmit = function(e) {
             if(nameForm.firstElementChild.value != "") {
@@ -893,7 +899,9 @@
             embeds.appendChild(leEmbed);
             document.getElementById("overlay").style.display = "";
             document.getElementById("overlay").style.backgroundColor = "rgba(0,0,0,.25)";*/
-            createEmbed(info.split("|")[0],info.split("|")[1],info.split("|")[2]);
+            createEmbed(info.split("|")[0],info.split("|")[1],info.split("|")[2],()=>{
+                socket.emit('do',info.split("|")[3]);
+            });
         });
         //socket.on("doFail",(info)=>{
         //    console.log(info);
@@ -1007,4 +1015,32 @@
         });*/
     </script>
 </body>
+<style>
+    @property --money {
+        syntax: "<integer>";
+        initial-value: 0;
+        inherits: false;
+    }
+    #money {
+        transition: --money 1s ease;
+        counter-set: money var(--money);
+    }
+    #money::after {
+        content: counter(money);
+    }
+
+    @property --bankMoney {
+        syntax: "<integer>";
+        initial-value: 0;
+        inherits: false;
+    }
+    #bankMoney {
+        transition: --bankMoney 1s ease;
+        counter-set: bankMoney var(--bankMoney);
+    }
+    #bankMoney::after {
+        content: counter(bankMoney);
+    }
+    /*visual studio code doesn't recognize @property and syntax highlighting completely breaks*/
+</style>
 </html>
