@@ -465,7 +465,7 @@
     <div style="display:none;">
         <div id="notecopy" class="framed tooltip" style="inset: auto;">
             <div style="padding:8px 4px;min-width:350px;">
-                <div class="close" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();this.parentElement.parentElement.remove();">x</div>
+                <div class="close" onclick="new sound('https://magicquest.github.io/sounds/tick.mp3').play();this.parentElement.parentElement.remove();">x</div>
                 <img src="stuff/img/monybag.png" style="float:left;margin-left:-8px;margin-top:-8px;"></img>
                 <div style="float:right;text-align:left;">
                     <span class="price">1.3 million</span>
@@ -482,11 +482,11 @@
                 <h3>sex request</h3>
                 <div class="block">your dad 😈 wants to have sexs</div>
                 <div class="optionBox">
-                    <a class="option" onclick="clear();new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();">Accept</a>
-                    <a class="option" onclick="clear();new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();">Decline</a>
+                    <a class="option" onclick="clear();new sound('https://magicquest.github.io/sounds/tick.mp3').play();">Accept</a>
+                    <a class="option" onclick="clear();new sound('https://magicquest.github.io/sounds/tick.mp3').play();">Decline</a>
                 </div>
             </div>
-            <!--div class="close" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();this.parentElement.remove();">x</div-->
+            <!--div class="close" onclick="new sound('https://magicquest.github.io/sounds/tick.mp3').play();this.parentElement.remove();">x</div-->
         </div>
         <div id="contextcopy" class="framed" style="inset: auto;width: 100px;">
             <div id="embedContent">
@@ -497,13 +497,13 @@
                 <h4 class="smallIcon bank" style="margin: 7px;">$69</h4>
                 <div class="line"></div>
                 <div class="optionBox">
-                    <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();clear();createEmbed('Give','How much money you finna give this man ','Custom').addButton('All',()=>{socket.emit('do','give all|'+event.target.parentElement.parentElement.firstElementChild.innerHTML)}).addButton('Custom <input></input>',()=>{console.log('custom');socket.emit('give 10|'+event.target.parentElement.parentElement.firstElementChild.innerHTML)}).finish();">Give</a>
+                    <a class="option" onclick="new sound('https://magicquest.github.io/sounds/tick.mp3').play();clear();createEmbed('Give','How much money you finna give this man ','Custom').addButton('All',()=>{socket.emit('do','give all|'+event.target.parentElement.parentElement.firstElementChild.innerHTML)}).addButton('Custom <input></input>',()=>{console.log('custom');socket.emit('give 10|'+event.target.parentElement.parentElement.firstElementChild.innerHTML)}).finish();">Give</a>
                     <!--br-->
-                    <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();console.log(event.target.parentElement.parentElement.firstElementChild.innerHTML);socket.emit('do','steal|'+event.target.parentElement.parentElement.firstElementChild.innerHTML);clear();">Steal</a>
+                    <a class="option" onclick="new sound('https://magicquest.github.io/sounds/tick.mp3').play();console.log(event.target.parentElement.parentElement.firstElementChild.innerHTML);socket.emit('do','steal|'+event.target.parentElement.parentElement.firstElementChild.innerHTML);clear();">Steal</a>
                     <!--br-->
-                    <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();">Inventory</a>
+                    <a class="option" onclick="new sound('https://magicquest.github.io/sounds/tick.mp3').play();">Inventory</a>
                     <!--br-->
-                    <a class="option" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();console.log(event.target.parentElement.parentElement.firstElementChild.innerHTML);socket.emit('do','sex|'+event.target.parentElement.parentElement.firstElementChild.innerHTML);clear();">Sex</a>
+                    <a class="option" onclick="new sound('https://magicquest.github.io/sounds/tick.mp3').play();console.log(event.target.parentElement.parentElement.firstElementChild.innerHTML);socket.emit('do','sex|'+event.target.parentElement.parentElement.firstElementChild.innerHTML);clear();">Sex</a>
                 </div>
             </div>
         </div>
@@ -586,7 +586,7 @@
         <!--img class="crate" src="stuff/img/border.png" style="cursor: pointer;background-image: url('stuff/img/shop.png');background-position: center;position:absolute;top:10px;left:10px;" onmouseout="let le = document.getElementById('tooltipAnchor'); le.style.display = 'none';" onmousemove="let le = document.getElementById('tooltipAnchor'); le.style.display = 'block'; le.style.inset = `${event.clientY}px auto auto ${event.clientX}px`;"-->
         <div id="notes">
             <!--div id="note">
-                <div class="close" onclick="new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();">x</div>
+                <div class="close" onclick="new sound('https://magicquest.github.io/sounds/tick.mp3').play();">x</div>
                 <div class="icon2" style="background-position:-192px -240px;"></div>
                 <div style="padding-top:7px;text-shadow: 0px 1px 1px #000;color: #ccc;">
                     <h3 style="margin: 0px;color:#ccc">command here</h3>
@@ -674,7 +674,7 @@
         }
 
         /*function buttonShit(callback) {
-            new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();
+            new sound('https://magicquest.github.io/sounds/tick.mp3').play();
             clear();
             callback();
         }*/
@@ -691,12 +691,12 @@
                 buttons.children[1].remove();
                 buttons.firstElementChild.innerHTML = "Ok";
                 buttons.firstElementChild.onclick = ()=>{
-                    new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();
+                    new sound('https://magicquest.github.io/sounds/tick.mp3').play();
                     clear();
                 };
             }else if(mode == "YesNo") {
                 buttons.firstElementChild.onclick = ()=>{
-                    new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();
+                    new sound('https://magicquest.github.io/sounds/tick.mp3').play();
                     clear();
                     callback();
                     //socket.emit('do',info.split("|")[3]);
@@ -711,7 +711,7 @@
                     clone.innerHTML = name;
                     clone.onclick = ()=>{
                         clear();
-                        new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();
+                        new sound('https://magicquest.github.io/sounds/tick.mp3').play();
                         callback();
                     }//buttonShit(callback);
                     buttons.appendChild(clone);
@@ -890,7 +890,7 @@
                 leEmbed.firstElementChild.children[2].firstElementChild.innerHTML = "Ok";
             }else if(info.split("|")[2] == "YesNo") {
                 leEmbed.firstElementChild.children[2].firstElementChild.onclick = ()=>{
-                    new sound('https://orteil.dashnet.org/cookieclicker/snd/tick.mp3').play();
+                    new sound('https://magicquest.github.io/sounds/tick.mp3').play();
                     leEmbed.remove();
                     eval("socket.emit('do','"+info.split("|")[3]+"');")
                 };
@@ -908,8 +908,12 @@
         //});
         socket.on("chat",(message)=>{
             //console.log(message);
-            chat.innerHTML += message + "<div class='line'></div>";
+            chat.innerHTML += `<div>${message}<div class='line'></div></div>`;
             chat.scrollTop = chat.scrollHeight;
+            if(chat.childElementCount > 400) {
+                chat.firstElementChild.remove();
+                //chat.firstElementChild.remove();
+            }
         });
 
         socket.on("joined",(info)=>{
@@ -1010,6 +1014,7 @@
                 updatePlayersList();
             }
         });
+        socket.on("disconnect",()=>{document.location.reload()})
         /*socket.on("items",(items)=>{
             console.log(items);
         });*/
