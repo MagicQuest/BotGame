@@ -565,6 +565,24 @@
             <button class="tempButton" onclick="socket.emit('do','withdraw 10');">
                 withdraw 10
             </button>
+            <button class="tempButton" onclick="socket.emit('do','buy reverse card');">
+                buy reverse crad
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','buy ghost steal');">
+                buy ghost stel
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','buy bank breaker');">
+                buy bank beaner
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','buy money back');">
+                buy money bank
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','buy money multiply');">
+                buy money mutlipler
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','auto');">
+                auto mode
+            </button>
         </div>
         <div style="position: absolute;top:10px;right:10px;transition: .5s top;text-align: center;overflow-y: hidden;">
             <div id="playersList" class="framed" style="width: 250px;height: 200px;overflow-y: scroll;">
@@ -637,6 +655,7 @@
         var chat = document.getElementById("chat");
         var notes = document.getElementById("notes");
         var embeds = document.getElementById("embedAnchor");
+        var overlay = document.getElementById("overlay");
         //var tooltips = document.getElementById("tooltipAnchor");
 
         var items;
@@ -669,8 +688,11 @@
         function clear() {
             document.getElementById("nameAnchor").innerHTML = "";
             embeds.innerHTML = "";
-            document.getElementById("overlay").style.display = "none";
-            document.getElementById("overlay").style.backgroundColor = "";
+            overlay.style.display = "none";
+            overlay.style.backgroundColor = "";
+            if(overlay.getAttribute("onclicke") != "") {
+                overlay.onclick = overlay.getAttribute("onclicke");//.setAttribute("onclick","");
+            }
         }
 
         /*function buttonShit(callback) {
@@ -681,20 +703,27 @@
 
         function createEmbed(name,content,mode,callback) {
             let leEmbed = document.createElement("div");//document.getElementById("embedcopy").cloneNode();
+            let modal = mode.includes("Modal");
+            mode = mode.slice(0,mode.indexOf("&"));
             leEmbed.id = "embed";
             leEmbed.className = "framed";
             leEmbed.innerHTML = document.getElementById("embedcopy").innerHTML;
             leEmbed.firstElementChild.firstElementChild.innerHTML = name;
             leEmbed.firstElementChild.children[1].innerHTML = content;
             let buttons = leEmbed.firstElementChild.children[2];
+            //if(mode.includes("&")) {
+            //    modal = mode.includes
+            //}
             if(mode == "Ok") {
                 buttons.children[1].remove();
                 buttons.firstElementChild.innerHTML = "Ok";
-                buttons.firstElementChild.onclick = ()=>{
+                buttons.firstElementChild.setAttribute("onclick","new sound('https://magicquest.github.io/sounds/tick.mp3').play();clear();");
+                /*buttons.firstElementChild.onclick = ()=>{
                     new sound('https://magicquest.github.io/sounds/tick.mp3').play();
                     clear();
-                };
+                };*/
             }else if(mode == "YesNo") {
+                //buttons.firstElementChild.setAttribute("onclick","new sound('https://magicquest.github.io/sounds/tick.mp3').play();clear();callback();");
                 buttons.firstElementChild.onclick = ()=>{
                     new sound('https://magicquest.github.io/sounds/tick.mp3').play();
                     clear();
@@ -718,15 +747,23 @@
                     return this;
                 },finish() {
                     embeds.appendChild(leEmbed);
-                    document.getElementById("overlay").style.display = "";
-                    document.getElementById("overlay").style.backgroundColor = "rgba(0,0,0,.25)";
+                    if(modal) {
+                        overlay.setAttribute("onclicke",overlay.onclick);
+                        overlay.setAttribute("onclick","");//.setAttribute("onclick","");
+                    }
+                    overlay.style.display = "";
+                    overlay.style.backgroundColor = "rgba(0,0,0,.25)";
                     button.remove();
                 }};
             }
             console.log(content);
             embeds.appendChild(leEmbed);
-            document.getElementById("overlay").style.display = "";
-            document.getElementById("overlay").style.backgroundColor = "rgba(0,0,0,.25)";
+            if(modal) {
+                overlay.setAttribute("onclicke",overlay.onclick);
+                overlay.setAttribute("onclick","");//.setAttribute("onclick","");
+            }
+            overlay.style.display = "";
+            overlay.style.backgroundColor = "rgba(0,0,0,.25)";
         }
 
         function crateClick(crate) {
@@ -779,7 +816,7 @@
             }
         });
         
-        document.getElementById("overlay").onmousedown = clear;
+        overlay.onmousedown = clear;
 
         /*for(craet of document.getElementById("crates").children) {
             //.forEach((craet)=>{
@@ -897,8 +934,8 @@
                 //leEmbed.firstElementChild.children[2].firstElementChild.onclick += `socket.emit("do",${info.split("|")[3]})`
             }
             embeds.appendChild(leEmbed);
-            document.getElementById("overlay").style.display = "";
-            document.getElementById("overlay").style.backgroundColor = "rgba(0,0,0,.25)";*/
+            overlay.style.display = "";
+            overlay.style.backgroundColor = "rgba(0,0,0,.25)";*/
             createEmbed(info.split("|")[0],info.split("|")[1],info.split("|")[2],()=>{
                 socket.emit('do',info.split("|")[3]);
             });
@@ -958,8 +995,8 @@
                 //console.log((!bruh) ? leEmbed.getBoundingClientRect().height/2 : 0);
                 document.getElementById("nameAnchor").style.inset = `${mouse.y}px auto auto ${mouse.x-leEmbed.getBoundingClientRect().width}px`
                 //leEmbed.firstElementChild.children[6].
-                document.getElementById("overlay").style.display = "";
-                //document.getElementById("overlay").onclick = ()=>{
+                overlay.style.display = "";
+                //overlay.onclick = ()=>{
                 //    clear();
                 //}
             });

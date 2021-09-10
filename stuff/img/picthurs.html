@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Images</title>
+    <style>
+        div {
+            display: inline-block;
+            margin: 5px 5px 5px 5px;
+            border: orange 5px solid;
+        }
+        h1 {
+            text-align: center;
+        }
+        #base {
+            display:none;
+        }
+    </style>
+</head>
+<body>
+    <div id="base">
+        <img src="https://pbs.twimg.com/media/D8Dp0c5WkAAkvME.jpg">
+        <h1>a random picture</h1>
+    </div>
+    <script>
+        //let pictures = [];//new Map();
+        //PUTTHESHITHERE
+        pictures.forEach((name)=>{
+            let base = document.getElementById("base").cloneNode(true);
+            base.id = "";
+            base.childNodes[1].src = document.location.href + name;
+            base.childNodes[3].innerText = name;
+            document.body.appendChild(base);
+        });
+    </script>
+</body>
+</html>
