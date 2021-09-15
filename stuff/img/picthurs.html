@@ -8,8 +8,17 @@
     <style>
         div {
             display: inline-block;
-            margin: 5px 5px 5px 5px;
-            border: orange 5px solid;
+            margin: 5px;
+            /*border: orange 5px solid;*/
+            border: 3px solid transparent;
+            border-image: url(frameBorder.png) 3 round;
+            border-radius: 2px;
+            box-shadow: 0px 0px 1px 2px rgb(0 0 0 / 50%), 0px 2px 4px rgb(0 0 0 / 25%), 0px 0px 2px 2px #000 inset, 0px 1px 0px 1px rgb(255 255 255 / 50%) inset;
+            text-shadow: 0px 1px 1px #000;
+            padding: 10px;
+        }
+        video, img {
+            max-width: 500px;
         }
         h1 {
             text-align: center;
@@ -28,11 +37,20 @@
         //let pictures = [];//new Map();
         //PUTTHESHITHERE
         pictures.forEach((name)=>{
+            let location = (document.location.href.lastIndexOf("/") == document.location.href.length-1 ? document.location.href : document.location.href+"/");
             let base = document.getElementById("base").cloneNode(true);
-            base.id = "";
-            base.childNodes[1].src = document.location.href + name;
-            base.childNodes[3].innerText = name;
+            base.id = "deez";
             document.body.appendChild(base);
+            let copy = document.getElementById("deez");
+            if(name.includes(".mp4")) {
+                copy.firstElementChild.remove();
+                copy.innerHTML = `<video src="${location+name}" controls></video>` + copy.innerHTML;
+                copy.lastElementChild.innerHTML = `<a href="${location+name}">${name}</a>`;
+            }else {
+                copy.firstElementChild.src = location + name;
+                copy.lastElementChild.innerHTML = `<a href="${location+name}">${name}</a>`;
+            }
+            copy.id = "";
         });
     </script>
 </body>

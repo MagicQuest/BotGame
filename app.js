@@ -2,9 +2,9 @@ const express = require('express');
 const app = express();
 const serv = require('http').Server(app);
 const fs = require("fs");
-let picthurs = fs.readFileSync("stuff/img/picthurs.html").toString();
-
 //time so you can only do certain things at certain times
+//music queue thinggy
+//banks and faciolity you can buy a building for 500,000 to 20 million and you can buy associats bassically make you money over time and the amount of money you get corrisponds to the higher up the facility  (he 500000 can make 50 dollars assecond and the 20 million could get you 213 thousand dollars and you can upagrade the accsoitats and shit)
 
 function print(string) {
     console.log(string);
@@ -24,9 +24,11 @@ app.get("/",function(req,res) {
     res.sendFile(__dirname + "/stuff/index.html");
 });
 
-app.get("/stuff/img",function(req,res) {
+app.get("/stuff/img/",function(req,res) {
     //console.log("bruh");
     //console.log(picthurs);
+    let picthurs = fs.readFileSync("stuff/img/picthurs.html").toString();
+
     let picthurs2 = picthurs.split("//PUTTHESHITHERE")[1];
     let shit = "let pictures = [";
     //picthurs2 = "let pictures = [" + picthurs2;
@@ -77,7 +79,7 @@ let jobs = new Map();
 
 function broadcast(sender,name,info) {
     players.forEach((plr)=>{
-        if(plr.id != sender.id) {
+        if(plr.name != sender.name) {
             plr.socket.emit(name,info);
         }
     });
@@ -121,26 +123,26 @@ function getPlayerObj(name) {
 
 addJob("youtuber","$1 - $55000 (with luck $55000 - $75000)","4 - 6 minutes",(sender)=>{
     //let sender = players[socket.id];
-    if(!saveData[sender.id].jail && !saveData[sender.id].work) {
+    if(!saveData[sender.name].jail && !saveData[sender.name].work) {
         let views = random(1,55000);
         let text;
         let money;
-        if(random(1,saveData[sender.id].luck) == 1) {
+        if(random(1,saveData[sender.name].luck) == 1) {
             views = random(55000,105000);
-            money = Math.floor(views*.18)//*userData[person.id].mul;
-            text = "you got a crazy amount of views: " + views + " and got "+money+" dollars "+sender.name+(saveData[sender.id].mul != 1 ? "&+"+(money*saveData[sender.id].mul-money)+"from your multiplier" : "");
-            money = money*saveData[sender.id].mul;
+            money = Math.floor(views*.18)//*userData[person.name].mul;
+            text = "you got a crazy amount of views: " + views + " and got "+money+" dollars "+sender.name+(saveData[sender.name].mul != 1 ? "&+"+(money*saveData[sender.name].mul-money)+"from your multiplier" : "");
+            money = money*saveData[sender.name].mul;
         }else {
-            money = Math.floor(views*.18)//*userData[person.id].mul;
-            text = "you got " + views + " views and "+money+" dollars "+sender.name+(saveData[sender.id].mul != 1 ? "&+"+(money*saveData[sender.id].mul-money)+"from your multiplier" : "");
-            money = money*saveData[sender.id].mul;
+            money = Math.floor(views*.18)//*userData[person.name].mul;
+            text = "you got " + views + " views and "+money+" dollars "+sender.name+(saveData[sender.name].mul != 1 ? "&+"+(money*saveData[sender.name].mul-money)+"from your multiplier" : "");
+            money = money*saveData[sender.name].mul;
         }
         
         //channel.send(embedGreen(text,"epic👌"));
         //setMoney(person,getMoney(person)+money);
         //waitToWork(person,time,channel);
-        saveData[sender.id].money += money;
-        saveData[sender.id].work = Date.now()/1000+(random(4,6)*60);
+        saveData[sender.name].money += money;
+        saveData[sender.name].work = Date.now()/1000+(random(4,6)*60);
 
         io.emit("chat",`${sender.name} made a youtube video and made $${money} with ${views} views`);
         sender.socket.emit("do",`Work|As a youtuber ${text}|[Success]|${money} dollars`);
@@ -151,30 +153,30 @@ addItem("reverse card|🃏Reverse card🃏",10000,"use this card when you have g
     //let sender = players[socket.id];
     //console.log(sender);
     //return;
-    if(saveData[sender.id].stealer) {
-        let stealer = saveData[sender.id].stealer;
+    if(saveData[sender.name].stealer) {
+        let stealer = saveData[sender.name].stealer;
         console.log(stealer);
-        saveData[stealer.id].stealer = stealer;
+        saveData[stealer.name].stealer = stealer;
         //saveData[stealer.name].stealer.person = sender;
-        saveData[sender.id].money += stealer.money;
+        saveData[sender.name].money += stealer.money;
 
-        if(saveData[stealer.id].money != 0) {
-            saveData[stealer.id].money -= stealer.money;
+        if(saveData[stealer.name].money != 0) {
+            saveData[stealer.name].money -= stealer.money;
             //            setMoney(saveData[sender.name].stealer.person,getMoney(saveData[sender.name].stealer.person)-saveData[sender.name].stealer.money)
         }else {
-            saveData[stealer.id].bankMoney -= stealer.money;
+            saveData[stealer.name].bankMoney -= stealer.money;
             //setBankMoney(stealer.person,getBankMoney(stealer.person)-stealer.money);
         }
         
-        delete saveData[sender.id].stealer;
-        saveData[sender.id].inventory.reversecard -= 1;
+        delete saveData[sender.name].stealer;
+        saveData[sender.name].inventory.reversecard -= 1;
         //removeReverseCard(sender);
         //message.channel.send("you have successfully used the reverse card");
         sender.socket.emit("do",`Use Item|Successfully used the reverse card on ${stealer.name}|[Success]|${stealer.money} dollars`);
         io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> is using a reverse card on ${stealer.name}!`);
-        //setMoney(saveData[saveData[sender.id].stealer.player.id].,getMoney(sender)+saveData[sender.id].stealer.money);
+        //setMoney(saveData[saveData[sender.name].stealer.player.name].,getMoney(sender)+saveData[sender.name].stealer.money);
     }else {
-        /*if(saveData[sender.id].nukedMoney) {
+        /*if(saveData[sender.name].nukedMoney) {
             for(var player in saveData) {
                 if(!saveData[player].name) {
                     return;
@@ -201,9 +203,10 @@ addItem("reverse card|🃏Reverse card🃏",10000,"use this card when you have g
 },false);
 addItem("ghost steal|🏃‍♂️GhostSteal🏃‍♂️",100000,"you can steal from anybody in 15 seconds (Ex: !Q buy ghost steal)",false,(sender)=>{
     //let sender = players[socket.id];
-    saveData[sender.id].inventory.ghoststeal -= 1;
-    saveData[sender.id].ghostSteal = (Date.now()/1000)+15000
-    //saveData[sender.id].ghostSteal = true;
+    saveData[sender.name].inventory.ghoststeal -= 1;
+    saveData[sender.name].ghostSteal = (Date.now()/1000)+15
+    //sender.socket.emit("time",`${}`);
+    //saveData[sender.name].ghostSteal = true;
     //message.channel.send("you have successfully used the ghost steal");
     sender.socket.emit("do",`Use Item|You activated your ghost steal|[Success]|`);
     io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> is using a ghost steal!`);
@@ -211,51 +214,50 @@ addItem("ghost steal|🏃‍♂️GhostSteal🏃‍♂️",100000,"you can steal
 addItem("bank breaker|🔨BankBreaker🔨",250000,"for 15 seconds you can break open somebody's bank and everybody can steal from them (Ex: !Q buy bank breaker)",true,(sender,person)=>{
     //let sender = players[data.socket.id];
     //let person = data.person;
-    saveData[sender.id].inventory.bankbreaker -= 1;
-    saveData[person.id].bankBreaker = (Date.now()/1000)+15000;
-    //saveData[person.id].bankbreaker = true;
+    saveData[sender.name].inventory.bankbreaker -= 1;
+    saveData[person.name].bankBreaker = (Date.now()/1000)+15;
+    //saveData[person.name].bankbreaker = true;
     //message.channel.send(`you have successfully used the bank breaker on ${person.username}`);
     sender.socket.emit("do",`Use Item|You used the bank breaker on ${person.name}&Trollin', just trollin'|[Success]|`);
     io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> is using a bank breaker on ${person.name}!`);
 },false);
 addItem("money back|💵MoneyBack💵",35000,"you can use this one to get your money back when you lost a gamble (Ex: !Q buy money back)",false,(sender)=>{
     //let sender = players[socket.id];
-    if(saveData[sender.id].gambledMoney) {
-        saveData[sender.id].money += saveData[sender.id].gambledMoney;
+    if(saveData[sender.name].gambledMoney) {
+        saveData[sender.name].money += saveData[sender.name].gambledMoney;
         //removeMoneyBack(sender);
-        saveData[sender.id].inventory.moneyback -= 1;
-        sender.socket.emit("do",`Use Item|You used the money back|[Success]|${saveData[sender.id].gambledMoney} dollars`);
-        io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> used a money back and got $${saveData[sender.id].gambledMoney} back!`);
-        delete saveData[sender.id].gambledMoney;
+        saveData[sender.name].inventory.moneyback -= 1;
+        sender.socket.emit("do",`Use Item|You used the money back|[Success]|${saveData[sender.name].gambledMoney} dollars`);
+        io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> used a money back and got $${saveData[sender.name].gambledMoney} back!`);
+        delete saveData[sender.name].gambledMoney;
         //message.channel.send("you have successfully used the money back");
     }//else {
         //socket.emit("usedFail","you haven't gambled any money yet");
     //}
-    /*else if(saveData[sender.id].nukedMoney) {
-        setMoney(sender,saveData[sender.id].nukedMoney.money);
-        setBankMoney(sender,saveData[sender.id].nukedMoney.bankMoney);
+    /*else if(saveData[sender.name].nukedMoney) {
+        setMoney(sender,saveData[sender.name].nukedMoney.money);
+        setBankMoney(sender,saveData[sender.name].nukedMoney.bankMoney);
         removeMoneyBack(sender);
         message.channel.send("you have successfully used the money back");
     }*/
 },false);
-addItem("money multiply|💸MoneyMultiply💸",50000,"this multiplies your money for 5 minutes including money from gambling and money from jobs (Ex: !Q buy money multiply)",false,(data)=>{
-    let loop = data.amount;
-    let sender = players[data.socket.id];
+addItem("money multiply|💸MoneyMultiply💸",50000,"this multiplies your money for 5 minutes including money from gambling and money from jobs (Ex: !Q buy money multiply)",false,(sender,amount)=>{
+    //let loop = data.amount;
     let used = false;
-    if(loop) {
-        if(loop == "max") {
-            loop = saveData[sender.name].inventory.moneymultiply.amount;
+    if(amount) {
+        if(amount == "max") {
+            amount = saveData[sender.name].inventory.moneymultiply;
         }else {
-            loop = Number(loop);
+            amount = Number(amount);
         }
     }else {
-        loop = 1;
+        amount = 1;
     }
     //console.log(loop);
    // console.log(item);
-    for(let i = 0;i < loop;i++) {
-        //if(!saveData[sender.id].inventory.moneymultiply) saveData[sender.id].inventory.moneymultiply = {};
-        //if(!saveData[sender.id].inventory.moneymultiply.amount) {
+    for(let i = 0;i < amount;i++) {
+        //if(!saveData[sender.name].inventory.moneymultiply) saveData[sender.name].inventory.moneymultiply = {};
+        //if(!saveData[sender.name].inventory.moneymultiply.amount) {
         //} else {
             if(saveData[sender.name].inventory.moneymultiply != 0) {
                 used = true;
@@ -293,8 +295,8 @@ addItem("money multiply|💸MoneyMultiply💸",50000,"this multiplies your money
         saveData[player].bankMoney = 0;
         saveData[player].inventory = {};
     }
-   // saveData[sender.id].nukeUser = true;
-    saveData.nuke = sender.id;
+   // saveData[sender.name].nukeUser = true;
+    saveData.nuke = sender.name;
     setTimeout(()=>{
         if(saveData.nuke) {
             delete saveData.nuke;
@@ -312,26 +314,26 @@ addItem("money multiply|💸MoneyMultiply💸",50000,"this multiplies your money
 },false);*/
 addItem("lottery ticket|🎰LotteryTicket🎰",100,"you can enter the lottery but you have a very low chance of winning unless you have lots of tickets (Ex: !Q buy lottery ticket)",false,(sender)=>{
     //let sender = message.author;
-    //saveData[sender.id].inventory.lotteryticket.amount -= 1;
+    //saveData[sender.name].inventory.lotteryticket.amount -= 1;
     socket.emit("usedFail","bruh you can't use this");
     //message.channel.send("bruh you can't use this");
 },false);
 
 function setStats(player) {
-    //console.log(saveData[player.id].money);
-    if(!saveData[player.id]) saveData[player.id] = {};
+    //console.log(saveData[player.name].money);
+    if(!saveData[player.name]) saveData[player.name] = {};
 
-    if(saveData[player.id].money == undefined) saveData[player.id].money = 100;
-        saveData[player.id].money = Math.floor(saveData[player.id].money);
-    if(!saveData[player.id].bankMoney) saveData[player.id].bankMoney = 0;
-    if(!saveData[player.id].inventory) saveData[player.id].inventory = {};
+    if(saveData[player.name].money == undefined) saveData[player.name].money = 100;
+        saveData[player.name].money = Math.floor(saveData[player.name].money);
+    if(!saveData[player.name].bankMoney) saveData[player.name].bankMoney = 0;
+    if(!saveData[player.name].inventory) saveData[player.name].inventory = {};
         for (let item of items.keys()) {
             let jsonName = item.split(" ").join("");
-            if(!saveData[player.id].inventory[jsonName]) saveData[player.id].inventory[jsonName] = 0;
+            if(!saveData[player.name].inventory[jsonName]) saveData[player.name].inventory[jsonName] = 0;
         }
-    if(!saveData[player.id].mul) saveData[player.id].mul = 1;
-    if(!saveData[player.id].luck) saveData[player.id].luck = 25;
-    if(!saveData[player.id].auto) saveData[player.id].auto = false;
+    if(!saveData[player.name].mul) saveData[player.name].mul = 1;
+    if(!saveData[player.name].luck) saveData[player.name].luck = 25;
+    if(!saveData[player.name].auto) saveData[player.name].auto = false;
 }
 
 function did(msg,socket,person,callback) {
@@ -348,18 +350,18 @@ function did(msg,socket,person,callback) {
     if(!sender) {
         return;
     }
-    //let lastMoneys = {money: saveData[sender.id].money,bankMoney: saveData[sender.id].bankMoney};
+    //let lastMoneys = {money: saveData[sender.name].money,bankMoney: saveData[sender.name].bankMoney};
     //let lastPersonMoneys;
     //console.log(sender);
     //console.log(person);
     person = getPlayerObj(person);
-    if(person && !person.id) {
+    if(person && !person.name) {
         person = undefined;
-    }else if(person && person.id) {
-        lastMoneys[person.id] = saveData[person.id].money+"|"+saveData[person.id].bankMoney;
-        //lastPersonMoneys = {money: saveData[person.id].money,bankMoney: saveData[person.id].bankMoney};
+    }else if(person && person.name) {
+        lastMoneys[person.name] = saveData[person.name].money+"|"+saveData[person.name].bankMoney;
+        //lastPersonMoneys = {money: saveData[person.name].money,bankMoney: saveData[person.name].bankMoney};
     }
-    lastMoneys[sender.id] = saveData[sender.id].money+"|"+saveData[sender.id].bankMoney;
+    lastMoneys[sender.name] = saveData[sender.name].money+"|"+saveData[sender.name].bankMoney;
     //console.log(person);
 
     setStats(sender);
@@ -404,7 +406,7 @@ function did(msg,socket,person,callback) {
     }*/
 
     /*if(msg.includes("multiplier")) {
-        message.channel.send(`${person ? person.username : sender.username }'s multiplier is **${saveData[person ? person.id : sender.id].mul}**`)
+        message.channel.send(`${person ? person.username : sender.username }'s multiplier is **${saveData[person ? person.name : sender.name].mul}**`)
     }*/
 
     /*if(msg.includes( + "say ")) {
@@ -458,7 +460,7 @@ function did(msg,socket,person,callback) {
             for (let key of items.keys()) {
                 let jsonName = key.split(" ").join("");
 
-                embed.addField(key+"s",saveData[person.id].inventory[jsonName]);
+                embed.addField(key+"s",saveData[person.name].inventory[jsonName]);
             }
             /*embed.addField("reverse cards",getReverseCards(person));
                 embed.addField("ghost steals",getGhostSteals(person));
@@ -469,25 +471,30 @@ function did(msg,socket,person,callback) {
                 
         }else {
             //embed.setTitle("Your Inventory")
-            let bruh = "";
-            for (let key of items.keys()) {
-                let jsonName = key.split(" ").join("");
-                //embed.addField(key+"s",saveData[sender.id].inventory[jsonName] ? saveData[sender.id].inventory[jsonName].amount : 0);
-                bruh += `${jsonName}: ${saveData[sender.id].inventory[jsonName]}\n`;
+            if(callback) {
+                let bruh = "";
+                for (let key of items.keys()) {
+                    let jsonName = key.split(" ").join("");
+                    //embed.addField(key+"s",saveData[sender.name].inventory[jsonName] ? saveData[sender.name].inventory[jsonName].amount : 0);
+                    bruh += `${jsonName}: ${saveData[sender.name].inventory[jsonName]}\n`;
+                }
+                callback(bruh);
+            }else {
+                socket.emit('do','Inventory|Where yo call back nigger&fucking black ass|[Fail]|-NaN dollars');
             }
-            callback(bruh);
+            
         }
         //message.channel.send(embed);
     }
 
     /*if(msg.includes("setStat")) {
-        //if(sender.id == 306199884699009035) {
+        //if(sender.name == 306199884699009035) {
             stat = msg.split(" ")[1];
             value = msg.split(" ")[2];
             if(value.charAt(value.length) != 'L') {
-                saveData[person.id][stat] = Number(value);
+                saveData[person.name][stat] = Number(value);
             }else {
-                saveData[person.id][stat] = value.slice(0,value.length);
+                saveData[person.name][stat] = value.slice(0,value.length);
             }
             //message.channel.send(`set ${person.username}'s ${stat} to ${value}`);
         //}else {
@@ -499,7 +506,7 @@ function did(msg,socket,person,callback) {
         let item = msg.slice(4);
         let amount;
         if(item.split(" ")[3]) {
-            amount = item.split(" ")[3];
+            amount = item.split(" ")[2];
             item = item.split(" ")[0] + " " + item.split(" ")[1];
         }
         let jsonName;
@@ -514,9 +521,9 @@ function did(msg,socket,person,callback) {
                     items.get(item).useCallback(sender,person);
                     return;
                 }
-                //if(!saveData[sender.id].inventory[jsonName]) saveData[sender.id].inventory[jsonName] = {};
-                //if(saveData[sender.id].inventory[jsonName].amount) {
-                    if(saveData[sender.id].inventory[jsonName] != 0) {
+                //if(!saveData[sender.name].inventory[jsonName]) saveData[sender.name].inventory[jsonName] = {};
+                //if(saveData[sender.name].inventory[jsonName].amount) {
+                    if(saveData[sender.name].inventory[jsonName] != 0) {
                         items.get(item).useCallback(sender,person);
                     }
                 //}//else {
@@ -531,9 +538,9 @@ function did(msg,socket,person,callback) {
                 items.get(item).useCallback(sender);
                 return;
             }
-            //if(!saveData[sender.id].inventory[jsonName]) saveData[sender.id].inventory[jsonName] = {};
-            //if(saveData[sender.id].inventory[jsonName]) {
-                if(saveData[sender.id].inventory[jsonName] != 0) {
+            //if(!saveData[sender.name].inventory[jsonName]) saveData[sender.name].inventory[jsonName] = {};
+            //if(saveData[sender.name].inventory[jsonName]) {
+                if(saveData[sender.name].inventory[jsonName] != 0) {
                     items.get(item).useCallback(sender);
                 }
             //}//else {
@@ -565,19 +572,19 @@ function did(msg,socket,person,callback) {
         let i;
         for(i = 0;i < number;i++) {
             let worked = false;
-            if(saveData[sender.id].money != 0 && saveData[sender.id].money >= price) {
-                saveData[sender.id].money -= price;
+            if(saveData[sender.name].money != 0 && saveData[sender.name].money >= price) {
+                saveData[sender.name].money -= price;
                 worked = true;
             }else {
-                if(saveData[sender.id].bankMoney != 0) {
-                    if(saveData[sender.id].bankMoney >= price) {
-                        saveData[sender.id].bankMoney -= price;
+                if(saveData[sender.name].bankMoney != 0) {
+                    if(saveData[sender.name].bankMoney >= price) {
+                        saveData[sender.name].bankMoney -= price;
                         worked = true;
                     }
                 }
             }
             if(worked) {
-                saveData[sender.id].inventory[jsonName] += 1;
+                saveData[sender.name].inventory[jsonName] += 1;
             }else {
                 failed = true;
                 //message.channel.send("you probably don't have enough money for this");
@@ -590,27 +597,27 @@ function did(msg,socket,person,callback) {
     if(msg.includes("withdraw ")) {
         let amount = msg.split(" ")[1];//msg.split(" ")[3] || msg.split(" ")[2];
         if(amount == "all") {
-            let mony = saveData[sender.id].bankMoney;
-            saveData[sender.id].money += saveData[sender.id].bankMoney;
-            saveData[sender.id].bankMoney = 0;
+            let mony = saveData[sender.name].bankMoney;
+            saveData[sender.name].money += saveData[sender.name].bankMoney;
+            saveData[sender.name].bankMoney = 0;
             //setBankMoney(sender,getBankMoney(sender)+getMoney(sender));
             //setMoney(sender,0);
-            //message.channel.send(embedGreen("💰Bank💰","your balance is now "+saveData[sender.id].bankMoney));
-            socket.emit('do',`Bank|You withdrew all of your money and your money is now ${saveData[sender.id].money}&Don't spend too much|[Success]|${mony} dollars`);
+            //message.channel.send(embedGreen("💰Bank💰","your balance is now "+saveData[sender.name].bankMoney));
+            socket.emit('do',`Bank|You withdrew all of your money and your money is now ${saveData[sender.name].money}&Don't spend too much|[Success]|${mony} dollars`);
         }else {
             amount = Number(amount);
             if(amount && amount > 0) {
-                if(amount < saveData[sender.id].bankMoney) {
-                    saveData[sender.id].money += amount;
+                if(amount < saveData[sender.name].bankMoney) {
+                    saveData[sender.name].money += amount;
                     //setBankMoney(sender,getBankMoney(sender)+amount);
-                    saveData[sender.id].bankMoney -= amount;
+                    saveData[sender.name].bankMoney -= amount;
                     //setMoney(sender,getMoney(sender)-amount);
-                    //message.channel.send(embedGreen("💰Bank💰","your balance is now "+saveData[sender.id].bankMoney));
-                    socket.emit('do',`Bank|You withdrew ${amount} and your money is now ${saveData[sender.id].money}&Don't spend too much|[Success]|${amount} dollars`);
-                }else if(amount == saveData[sender.id].bankMoney) {
-                    saveData[sender.id].money += amount;
-                    saveData[sender.id].bankMoney = 0;
-                    socket.emit('do',`Bank|You withdrew all of your money and your money is now ${saveData[sender.id].money}&Don't spend too much|[Success]|${amount} dollars`);
+                    //message.channel.send(embedGreen("💰Bank💰","your balance is now "+saveData[sender.name].bankMoney));
+                    socket.emit('do',`Bank|You withdrew ${amount} and your money is now ${saveData[sender.name].money}&Don't spend too much|[Success]|${amount} dollars`);
+                }else if(amount == saveData[sender.name].bankMoney) {
+                    saveData[sender.name].money += amount;
+                    saveData[sender.name].bankMoney = 0;
+                    socket.emit('do',`Bank|You withdrew all of your money and your money is now ${saveData[sender.name].money}&Don't spend too much|[Success]|${amount} dollars`);
                 }
             }
         }
@@ -618,34 +625,34 @@ function did(msg,socket,person,callback) {
     if(msg.includes("deposit ")) {
         let amount = msg.split(" ")[1];//msg.split(" ")[3] || msg.split(" ")[2];
         if(amount == "all") {
-            let mony = saveData[sender.id].money;
-            saveData[sender.id].bankMoney += saveData[sender.id].money;
-            saveData[sender.id].money = 0;
+            let mony = saveData[sender.name].money;
+            saveData[sender.name].bankMoney += saveData[sender.name].money;
+            saveData[sender.name].money = 0;
             //setBankMoney(sender,getBankMoney(sender)+getMoney(sender));
             //setMoney(sender,0);
-            //message.channel.send(embedGreen("💰Bank💰","your balance is now "+saveData[sender.id].bankMoney));
-            socket.emit('do',`Bank|You deposited all of your money and your balance is now ${saveData[sender.id].bankMoney}&Saving up for college eh? Good thinkin'|[Success]|${mony} dollars`);
+            //message.channel.send(embedGreen("💰Bank💰","your balance is now "+saveData[sender.name].bankMoney));
+            socket.emit('do',`Bank|You deposited all of your money and your balance is now ${saveData[sender.name].bankMoney}&Saving up for college eh? Good thinkin'|[Success]|${mony} dollars`);
         }else {
             amount = Number(amount);
             if(amount && amount > 0) {
-                if(amount < saveData[sender.id].money) {
-                    saveData[sender.id].bankMoney += amount;
+                if(amount < saveData[sender.name].money) {
+                    saveData[sender.name].bankMoney += amount;
                     //setBankMoney(sender,getBankMoney(sender)+amount);
-                    saveData[sender.id].money -= amount;
+                    saveData[sender.name].money -= amount;
                     //setMoney(sender,getMoney(sender)-amount);
-                    //message.channel.send(embedGreen("💰Bank💰","your balance is now "+saveData[sender.id].bankMoney));
-                    socket.emit('do',`Bank|You deposited ${amount} and your balance is now ${saveData[sender.id].bankMoney}&Saving up for college eh? Good thinkin'|[Success]|${amount} dollars`);
-                }else if(amount == saveData[sender.id].money) {
-                    saveData[sender.id].bankMoney += amount;
-                    saveData[sender.id].money = 0;
-                    socket.emit('do',`Bank|You deposited all of your money and your balance is now ${saveData[sender.id].bankMoney}&Saving up for college eh? Good thinkin'|[Success]|${amount} dollars`);
+                    //message.channel.send(embedGreen("💰Bank💰","your balance is now "+saveData[sender.name].bankMoney));
+                    socket.emit('do',`Bank|You deposited ${amount} and your balance is now ${saveData[sender.name].bankMoney}&Saving up for college eh? Good thinkin'|[Success]|${amount} dollars`);
+                }else if(amount == saveData[sender.name].money) {
+                    saveData[sender.name].bankMoney += amount;
+                    saveData[sender.name].money = 0;
+                    socket.emit('do',`Bank|You deposited all of your money and your balance is now ${saveData[sender.name].bankMoney}&Saving up for college eh? Good thinkin'|[Success]|${amount} dollars`);
                 }
             }
         }
     }
     if(msg.includes("gamble ")) {
         let moneyGambled = msg.split(" ")[1];//msg.slice(.length+7);
-        if(saveData[sender.id].money != 0) {
+        if(saveData[sender.name].money != 0) {
             /*let percent = random(5,100);
             let win = random(1,2);
             //let moneyToGamble = random(1,getMoney(sender));
@@ -662,39 +669,39 @@ function did(msg,socket,person,callback) {
                 let win = random(1,2);
                 if(win == 1) {
                     if(random(0,100) > 95) {
-                        let moneyGambled = saveData[sender.id].money*3;
-                        let finalWinnings = moneyGambled*saveData[sender.id].mul;
-                        saveData[sender.id].money = finalWinnings;
-                        //setMoney(sender,saveData[sender.id].money*3*saveData[sender.id].mul)
-                        socket.emit('do',`Gamble|You gambled $${moneyGambled/3} and won $${moneyGambled} (and with a random chance it was tripled)${saveData[sender.id].mul != 1 ? `&(+$${finalWinnings - moneyGambled} because of your multiplier)` : "&Lucky lucky lucky!"}|[Success]|${finalWinnings} dollars`);
-                        io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled all of their money ($${moneyGambled/3}) and won $${moneyGambled} (randomly tripled)${saveData[sender.id].mul != 1 ? ` (+$${finalWinnings - moneyGambled} because of their multiplier)` : ""}`);
-                        //message.channel.send(embedGreen(`${sender.username} won (and with a random chance it was tripled)`,"you now have "+ saveData[sender.id].money + " coins"));
+                        let moneyGambled = saveData[sender.name].money*3;
+                        let finalWinnings = moneyGambled*saveData[sender.name].mul;
+                        saveData[sender.name].money = finalWinnings;
+                        //setMoney(sender,saveData[sender.name].money*3*saveData[sender.name].mul)
+                        socket.emit('do',`Gamble|You gambled $${moneyGambled/3} and won $${moneyGambled} (and with a random chance it was tripled)${saveData[sender.name].mul != 1 ? `&(+$${finalWinnings - moneyGambled} because of your multiplier)` : "&Lucky lucky lucky!"}|[Success]|${finalWinnings} dollars`);
+                        io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled all of their money ($${moneyGambled/3}) and won $${moneyGambled} (randomly tripled)${saveData[sender.name].mul != 1 ? ` (+$${finalWinnings - moneyGambled} because of their multiplier)` : ""}`);
+                        //message.channel.send(embedGreen(`${sender.username} won (and with a random chance it was tripled)`,"you now have "+ saveData[sender.name].money + " coins"));
                     }else {
-                        let moneyGambled = saveData[sender.id].money*2;
-                        let finalWinnings = moneyGambled*saveData[sender.id].mul;
-                        saveData[sender.id].money = finalWinnings;
-                        //setMoney(sender,saveData[sender.id].money*3*saveData[sender.id].mul)
-                        socket.emit('do',`Gamble|You gambled $${moneyGambled/2} and won $${moneyGambled}${saveData[sender.id].mul != 1 ? `&(+$${finalWinnings - moneyGambled} because of your multiplier)` : ""}|[Success]|${finalWinnings} dollars`);
-                        io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled all of their money and won $${moneyGambled}${saveData[sender.id].mul != 1 ? ` (+$${finalWinnings - moneyGambled} because of their multiplier)` : ""}`);
+                        let moneyGambled = saveData[sender.name].money*2;
+                        let finalWinnings = moneyGambled*saveData[sender.name].mul;
+                        saveData[sender.name].money = finalWinnings;
+                        //setMoney(sender,saveData[sender.name].money*3*saveData[sender.name].mul)
+                        socket.emit('do',`Gamble|You gambled $${moneyGambled/2} and won $${moneyGambled}${saveData[sender.name].mul != 1 ? `&(+$${finalWinnings - moneyGambled} because of your multiplier)` : ""}|[Success]|${finalWinnings} dollars`);
+                        io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled all of their money and won $${moneyGambled}${saveData[sender.name].mul != 1 ? ` (+$${finalWinnings - moneyGambled} because of their multiplier)` : ""}`);
 
-                        //saveData[sender.id].money *= 2*saveData[sender.id].mul;
-                        //setMoney(sender,saveData[sender.id].money*2*saveData[sender.id].mul)
-                        //message.channel.send(embedGreen(`${sender.username} won`,"you now have "+ saveData[sender.id].money + " coins"));
+                        //saveData[sender.name].money *= 2*saveData[sender.name].mul;
+                        //setMoney(sender,saveData[sender.name].money*2*saveData[sender.name].mul)
+                        //message.channel.send(embedGreen(`${sender.username} won`,"you now have "+ saveData[sender.name].money + " coins"));
                     }
                     
                 }else {
-                    saveData[sender.id].gambledMoney = saveData[sender.id].money;
-                    saveData[sender.id].money = 0;
+                    saveData[sender.name].gambledMoney = saveData[sender.name].money;
+                    saveData[sender.name].money = 0;
                     //setMoney(sender,0);
                     io.emit('chat',`<a onclick="nameClick(event)">${sender.name}</a> just gambled all their money and lost`);
-                    socket.emit('do',`Gamble|you just gambled all of your money and lost&Sometimes we don't get what we want|[Fail]|-${saveData[sender.id].gambledMoney} dollars`);
+                    socket.emit('do',`Gamble|you just gambled all of your money and lost&Sometimes we don't get what we want|[Fail]|-${saveData[sender.name].gambledMoney} dollars`);
                     //message.channel.send(embedRed(`${sender.username} lost...`,"welp it seems as though you phucking lose all yo money"));
-                    if(saveData[sender.id].auto && saveData[sender.id].inventory.moneyback != 0) {
-                        saveData[sender.id].money += saveData[sender.id].gambledMoney;
-                        //setMoney(sender,getMoney(sender)+saveData[sender.id].gambledMoney);
-                        delete saveData[sender.id].gambledMoney;
-                        saveData[sender.id].inventory.moneyback -= 1;
-                        if(saveData[sender.id].inventory.moneyback == 1) {
+                    if(saveData[sender.name].auto && saveData[sender.name].inventory.moneyback != 0) {
+                        saveData[sender.name].money += saveData[sender.name].gambledMoney;
+                        //setMoney(sender,getMoney(sender)+saveData[sender.name].gambledMoney);
+                        delete saveData[sender.name].gambledMoney;
+                        saveData[sender.name].inventory.moneyback -= 1;
+                        if(saveData[sender.name].inventory.moneyback == 1) {
                             socket.emit("embed",`Gambling|warning this is your last money back|Ok&Modal`);
                         }
                         socket.emit('do','Auto|automatically used money back|[Success]|');
@@ -703,72 +710,75 @@ function did(msg,socket,person,callback) {
             }else if(moneyGambled == "random") {
                 let percent = random(5,100);
                 let win = random(1,2);
-                let moneyToGamble = random(1,saveData[sender.id].money);
+                let moneyToGamble = random(1,saveData[sender.name].money);
                 if(win == 1) {
                     if(random(0,100) > 95) {
                         let moneyToWin = (moneyToGamble*percent/50)*3;
-                        let finalWinnings = moneyToWin*saveData[sender.id].mul;
-                        saveData[sender.id].money += finalWinnings;
-                        //setMoney(sender,saveData[sender.id].money+moneyToWin*saveData[sender.id].mul*3);
-                        socket.emit('do',`Gamble|You gambled random ($${moneyToGamble}) and won $${moneyToWin} (tripled) by %${percent}${saveData[sender.id].mul != 1 ? `&(+$${finalWinnings - moneyToWin} because of your multiplier)` : "&Lucky lucky lucky!"}|[Success]|${finalWinnings} dollars`);
-                        io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled random ($${moneyToGamble}) and won $${moneyToWin} (tripled) by %${percent}${saveData[sender.id].mul != 1 ? ` +$${finalWinnings - moneyToWin} because of their multiplier` : ""}`);
+                        let finalWinnings = moneyToWin*saveData[sender.name].mul;
+                        saveData[sender.name].money += finalWinnings;
+                        //setMoney(sender,saveData[sender.name].money+moneyToWin*saveData[sender.name].mul*3);
+                        socket.emit('do',`Gamble|You gambled random ($${moneyToGamble}) and won $${moneyToWin} (tripled) by %${percent}${saveData[sender.name].mul != 1 ? `&(+$${finalWinnings - moneyToWin} because of your multiplier)` : "&Lucky lucky lucky!"}|[Success]|${finalWinnings} dollars`);
+                        io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled random ($${moneyToGamble}) and won $${moneyToWin} (tripled) by %${percent}${saveData[sender.name].mul != 1 ? ` +$${finalWinnings - moneyToWin} because of their multiplier` : ""}`);
 
                         //message.channel.send(embedGreen(`${sender.username} won $`+finalWinnings+" (randomly tripled)","Percent: %"+percent));
                     }else {
+                        //console.log(moneyToGamble);
+                        //console.log(moneyToGamble*percent/50);
+                        //console.log(moneyToGamble*percent/100);
                         let moneyToWin = moneyToGamble*percent/50;
-                        let finalWinnings = moneyToWin*saveData[sender.id].mul;
-                        saveData[sender.id].money += finalWinnings;
-                        //setMoney(sender,saveData[sender.id].money+moneyToWin*saveData[sender.id].mul);
+                        let finalWinnings = moneyToWin*saveData[sender.name].mul;
+                        saveData[sender.name].money += finalWinnings;
+                        //setMoney(sender,saveData[sender.name].money+moneyToWin*saveData[sender.name].mul);
                         //message.channel.send(embedGreen(`${sender.username} won $`+finalWinnings,"Percent: %"+percent));
-                        socket.emit('do',`Gamble|You gambled random ($${moneyToGamble}) and won $${moneyToWin} by %${percent}${saveData[sender.id].mul != 1 ? `&(+$${finalWinnings - moneyToWin} because of your multiplier)` : ""}|[Success]|${finalWinnings} dollars`);
-                        io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled random ($${moneyToGamble}) and won $${moneyToWin} by %${percent}${saveData[sender.id].mul != 1 ? ` +$${finalWinnings - moneyToWin} because of their multiplier` : ""}`);
+                        socket.emit('do',`Gamble|You gambled random ($${moneyToGamble}) and won $${moneyToWin} by %${percent}${saveData[sender.name].mul != 1 ? `&(+$${finalWinnings - moneyToWin} because of your multiplier)` : ""}|[Success]|${finalWinnings} dollars`);
+                        io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled random ($${moneyToGamble}) and won $${moneyToWin} by %${percent}${saveData[sender.name].mul != 1 ? ` +$${finalWinnings - moneyToWin} because of their multiplier` : ""}`);
                     }
                 }else {
-                    if(moneyToGamble == saveData[sender.id].money) {
-                        //saveData[sender.id].gambledMoney = getMoney(sender);
-                        saveData[sender.id].gambledMoney = saveData[sender.id].money;
-                        saveData[sender.id].money = 0;
+                    if(moneyToGamble == saveData[sender.name].money) {
+                        //saveData[sender.name].gambledMoney = getMoney(sender);
+                        saveData[sender.name].gambledMoney = saveData[sender.name].money;
+                        saveData[sender.name].money = 0;
                         //setMoney(sender,0);
                         io.emit('chat',`<a onclick="nameClick(event)">${sender.name}</a> just gambled all their money and lost`);
-                        socket.emit('do',`Gamble|you just gambled random which happened to be all of your money and lost&Sometimes we don't get what we want|[Fail]|-${saveData[sender.id].gambledMoney} dollars`);
+                        socket.emit('do',`Gamble|you just gambled random which happened to be all of your money and lost&Sometimes we don't get what we want|[Fail]|-${saveData[sender.name].gambledMoney} dollars`);
                         //message.channel.send(embedRed(`${sender.username} lost...`,"welp it seems as though you phucking lose all yo money"));
                     }else {
-                        saveData[sender.id].gambledMoney = moneyToGamble;
-                        saveData[sender.id].money -= moneyToGamble;
-                        //setMoney(sender,saveData[sender.id].money-moneyToGamble);
+                        saveData[sender.name].gambledMoney = moneyToGamble;
+                        saveData[sender.name].money -= moneyToGamble;
+                        //setMoney(sender,saveData[sender.name].money-moneyToGamble);
                         io.emit('chat',`<a onclick="nameClick(event)">${sender.name}</a> just gambled random (${moneyToGamble}) and lost`);
-                        socket.emit('do',`Gamble|you just gambled random (${moneyToGamble}) and lost&Sometimes we don't get what we want|[Fail]|-${saveData[sender.id].gambledMoney} dollars`);
+                        socket.emit('do',`Gamble|you just gambled random (${moneyToGamble}) and lost&Sometimes we don't get what we want|[Fail]|-${saveData[sender.name].gambledMoney} dollars`);
                         //message.channel.send(embedRed(`${sender.username} lost... `+moneyToGamble+" dollars","welp it seems as though you lose a couple dollariereodos"));
                     }
                 }
             }else if(moneyGambled == "half") {
-                let moneyGambled = saveData[sender.id].money/2;
+                let moneyGambled = saveData[sender.name].money/2;
                 let percent = random(5,100);
                 let win = random(1,2);
-                if(moneyGambled <= saveData[sender.id].money) {
+                if(moneyGambled <= saveData[sender.name].money) {
                     if(win == 1) {
                         if(random(0,100) > 95) {
                             let moneyToWin = (moneyGambled*percent/50)*3;
-                            let finalWinnings = moneyToWin*saveData[sender.id].mul;
-                            saveData[sender.id].money += finalWinnings;
-                            //setMoney(sender,saveData[sender.id].money+moneyToWin*saveData[sender.id].mul*3);
-                            socket.emit('do',`Gamble|You gambled half ($${moneyGambled}) and won $${moneyToWin} (tripled) by %${percent}${saveData[sender.id].mul != 1 ? `&(+$${finalWinnings - moneyToWin} because of your multiplier)` : "&Lucky lucky lucky!"}|[Success]|${finalWinnings} dollars`);
-                            io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled half ($${moneyGambled}) and won $${moneyToWin} (tripled) by %${percent}${saveData[sender.id].mul != 1 ? ` +$${finalWinnings - moneyToWin} because of their multiplier` : ""}`);
+                            let finalWinnings = moneyToWin*saveData[sender.name].mul;
+                            saveData[sender.name].money += finalWinnings;
+                            //setMoney(sender,saveData[sender.name].money+moneyToWin*saveData[sender.name].mul*3);
+                            socket.emit('do',`Gamble|You gambled half ($${moneyGambled}) and won $${moneyToWin} (tripled) by %${percent}${saveData[sender.name].mul != 1 ? `&(+$${finalWinnings - moneyToWin} because of your multiplier)` : "&Lucky lucky lucky!"}|[Success]|${finalWinnings} dollars`);
+                            io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled half ($${moneyGambled}) and won $${moneyToWin} (tripled) by %${percent}${saveData[sender.name].mul != 1 ? ` +$${finalWinnings - moneyToWin} because of their multiplier` : ""}`);
                         }else {
-                            let moneyToWin = (moneyGambled*percent/50)*2;
-                            let finalWinnings = moneyToWin*saveData[sender.id].mul;
-                            saveData[sender.id].money += finalWinnings;
-                            //setMoney(sender,saveData[sender.id].money+moneyToWin*saveData[sender.id].mul*3);
-                            socket.emit("do",`Gamble|You gambled half ($${moneyGambled}) and won $${moneyToWin} by %${percent}${saveData[sender.id].mul != 1 ? `&(+$${finalWinnings - moneyToWin} because of your multiplier)` : ""}|[Success]|${finalWinnings} dollars`);
-                            io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled half ($${moneyGambled}) and won $${moneyToWin} by %${percent}${saveData[sender.id].mul != 1 ? ` +$${finalWinnings - moneyToWin} because of their multiplier` : ""}`);
+                            let moneyToWin = (moneyGambled*percent/50)//*2; why did i put this????
+                            let finalWinnings = moneyToWin*saveData[sender.name].mul;
+                            saveData[sender.name].money += finalWinnings;
+                            //setMoney(sender,saveData[sender.name].money+moneyToWin*saveData[sender.name].mul*3);
+                            socket.emit("do",`Gamble|You gambled half ($${moneyGambled}) and won $${moneyToWin} by %${percent}${saveData[sender.name].mul != 1 ? `&(+$${finalWinnings - moneyToWin} because of your multiplier)` : ""}|[Success]|${finalWinnings} dollars`);
+                            io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled half ($${moneyGambled}) and won $${moneyToWin} by %${percent}${saveData[sender.name].mul != 1 ? ` +$${finalWinnings - moneyToWin} because of their multiplier` : ""}`);
                         }
                     }else {
-                        saveData[sender.id].gambledMoney = moneyGambled;
-                        saveData[sender.id].money -= moneyGambled;
+                        saveData[sender.name].gambledMoney = moneyGambled;
+                        saveData[sender.name].money -= moneyGambled;
 
                         socket.emit("do",`Gamble|you gambled half your money and lost|[Fail]|-${moneyGambled} dollers`);
                         io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled half their money ($${moneyGambled}) and lost`);
-                        //setMoney(sender,saveData[sender.id].money-moneyGambled);
+                        //setMoney(sender,saveData[sender.name].money-moneyGambled);
                         //message.channel.send(embedRed(`${sender.username} lost... `+moneyGambled+" dollars","welp it seems as though you lose a couple dollariereodos"));
                     }
                 }
@@ -778,116 +788,119 @@ function did(msg,socket,person,callback) {
                     let moneyGambled2 = Math.floor(moneyGambled);
                     let percent = random(5,100);
                     let win = random(1,2);
-                    if(moneyGambled2 <= saveData[sender.id].money) {
+                    if(moneyGambled2 <= saveData[sender.name].money) {
                         if(win == 1) {
                             if(random(0,100) > 95) {
                                 let moneyToWin = (moneyGambled2*percent/50)*3;
-                                let finalWinnings = moneyToWin*saveData[sender.id].mul;
-                                saveData[sender.id].money += finalWinnings;
-                                //setMoney(sender,saveData[sender.id].money+moneyToWin*saveData[sender.id].mul*3);
-                                socket.emit('do',`Gamble|You gambled $${moneyGambled2} and won $${moneyToWin} (tripled) by %${percent}${saveData[sender.id].mul != 1 ? `&(+$${finalWinnings - moneyToWin} because of your multiplier)` : "&Lucky lucky lucky!"}|[Success]|${finalWinnings} dollars`);
-                                io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled $${moneyGambled2} and won $${moneyToWin} (tripled) by %${percent}${saveData[sender.id].mul != 1 ? ` +$${finalWinnings - moneyToWin} because of their multiplier` : ""}`);
+                                let finalWinnings = moneyToWin*saveData[sender.name].mul;
+                                saveData[sender.name].money += finalWinnings;
+                                //setMoney(sender,saveData[sender.name].money+moneyToWin*saveData[sender.name].mul*3);
+                                socket.emit('do',`Gamble|You gambled $${moneyGambled2} and won $${moneyToWin} (tripled) by %${percent}${saveData[sender.name].mul != 1 ? `&(+$${finalWinnings - moneyToWin} because of your multiplier)` : "&Lucky lucky lucky!"}|[Success]|${finalWinnings} dollars`);
+                                io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled $${moneyGambled2} and won $${moneyToWin} (tripled) by %${percent}${saveData[sender.name].mul != 1 ? ` +$${finalWinnings - moneyToWin} because of their multiplier` : ""}`);
                             }else {
-                                let moneyToWin = (moneyGambled2*percent/50)*2;
-                                let finalWinnings = moneyToWin*saveData[sender.id].mul;
-                                saveData[sender.id].money += finalWinnings;
-                                //setMoney(sender,saveData[sender.id].money+moneyToWin*saveData[sender.id].mul*3);
-                                socket.emit('do',`Gamble|You gambled $${moneyGambled2} and won $${moneyToWin} by %${percent}${saveData[sender.id].mul != 1 ? `&(+$${finalWinnings - moneyToWin} because of your multiplier)` : ""}|[Success]|${finalWinnings} dollars`);
-                                io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled $${moneyGambled2} and won $${moneyToWin} by %${percent}${saveData[sender.id].mul != 1 ? ` +$${finalWinnings - moneyToWin} because of their multiplier` : ""}`);
+                                let moneyToWin = (moneyGambled2*percent/50)//*2;
+                                let finalWinnings = moneyToWin*saveData[sender.name].mul;
+                                saveData[sender.name].money += finalWinnings;
+                                //setMoney(sender,saveData[sender.name].money+moneyToWin*saveData[sender.name].mul*3);
+                                socket.emit('do',`Gamble|You gambled $${moneyGambled2} and won $${moneyToWin} by %${percent}${saveData[sender.name].mul != 1 ? `&(+$${finalWinnings - moneyToWin} because of your multiplier)` : ""}|[Success]|${finalWinnings} dollars`);
+                                io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gambled $${moneyGambled2} and won $${moneyToWin} by %${percent}${saveData[sender.name].mul != 1 ? ` +$${finalWinnings - moneyToWin} because of their multiplier` : ""}`);
                             }
                             
                         }else {
-                            if(moneyGambled2 == saveData[sender.id].money) {
-                                saveData[sender.id].gambledMoney = saveData[sender.id].money;
-                                saveData[sender.id].money = 0;
+                            if(moneyGambled2 == saveData[sender.name].money) {
+                                saveData[sender.name].gambledMoney = saveData[sender.name].money;
+                                saveData[sender.name].money = 0;
 
                                 io.emit('chat',`<a onclick="nameClick(event)">${sender.name}</a> just gambled all their money and lost`);
-                                socket.emit('do',`Gamble|you just gambled all of your money and lost&Sometimes we don't get what we want|[Fail]|-${saveData[sender.id].gambledMoney} dollars`);
+                                socket.emit('do',`Gamble|you just gambled all of your money and lost&Sometimes we don't get what we want|[Fail]|-${saveData[sender.name].gambledMoney} dollars`);
 
                             }else {
-                                saveData[sender.id].gambledMoney = moneyGambled2;
-                                saveData[sender.id].money -= moneyGambled2;
-                                //setMoney(sender,saveData[sender.id].money-moneyGambled2);
+                                saveData[sender.name].gambledMoney = moneyGambled2;
+                                saveData[sender.name].money -= moneyGambled2;
+                                //setMoney(sender,saveData[sender.name].money-moneyGambled2);
                                 io.emit('chat',`<a onclick="nameClick(event)">${sender.name}</a> gambled $${moneyGambled2} and lost`);
-                                socket.emit('do',`Gamble|you just gambled $${moneyGambled2} and lost&Sometimes we don't get what we want|[Fail]|-${saveData[sender.id].gambledMoney} dollars`);
+                                socket.emit('do',`Gamble|you just gambled $${moneyGambled2} and lost&Sometimes we don't get what we want|[Fail]|-${saveData[sender.name].gambledMoney} dollars`);
                             }
                         }
                     }
                 }
             }
-            saveData[sender.id].money = Math.floor(saveData[sender.id].money);
+            saveData[sender.name].money = Math.floor(saveData[sender.name].money);
         }//else{
             //message.channel.send(embedRed("Gambling","you don't have any money"));
         //}
     }
     if(msg.includes("steal") && person) {
         //console.log(person);
-        if(!saveData[sender.id].jail) {
-            if(saveData[sender.id].ghostSteal || saveData[person.id].bankbreaker) {
+        if(!saveData[sender.name].jail) {
+            if(saveData[sender.name].ghostSteal || saveData[person.name].bankbreaker) {
                 let steal = random(0,5);
-                let money = random(1,saveData[person.id].bankMoney);
-                if(steal != 0) {
-                    person.socket.emit("do",`Steal|${sender.name} stole $${money} from you!!!&Fail... epic fail|[Fail]|-${money} dollars`);
-                    //person.send("somebody stole "+money+" dollars from you!!!")
-                    saveData[person.id].stealer = {};
-                    saveData[person.id].stealer.name = sender.name;
-                    saveData[person.id].stealer.id = sender.id;
-                    //saveData[person.id].stealer.person = sender.id;
-                    saveData[person.id].stealer.money = money;
-                    saveData[person.id].stealer.time = (Date.now()/1000)+60;
-                    //waitToRemoveStealer(person,message.channel);
-                    
-                    
-                    if(saveData[person.id].bankMoney == money) {
-                        saveData[sender.id].bankMoney += saveData[person.id];
-                        //setBankMoney(sender,getBankMoney(sender)+getBankMoney(person));
-                        //setBankMoney(person,0);
-                        saveData[person.id].bankMoney = 0;
+                let money = random(1,saveData[person.name].bankMoney);
+                if(saveData[person.name].bankMoney != 0) {
+                    if(steal != 0) {
+                        person.socket.emit("do",`Steal|${sender.name} stole $${money} from you!!!&Fail... epic fail|[Fail]|-${money} dollars`);
+                        //person.send("somebody stole "+money+" dollars from you!!!")
+                        saveData[person.name].stealer = {};
+                        saveData[person.name].stealer.name = sender.name;
+                        saveData[person.name].stealer.name = sender.name;
+                        //saveData[person.name].stealer.person = sender.name;
+                        saveData[person.name].stealer.money = money;
+                        saveData[person.name].stealer.time = (Date.now()/1000)+60;
+                        //waitToRemoveStealer(person,message.channel);
+                        
+                        
+                        if(saveData[person.name].bankMoney == money) {
+                            saveData[sender.name].bankMoney += saveData[person.name].bankMoney;
+                            //setBankMoney(sender,getBankMoney(sender)+getBankMoney(person));
+                            //setBankMoney(person,0);
+                            saveData[person.name].bankMoney = 0;
+                        }else {
+                            saveData[person.name].bankMoney -= money;
+                            saveData[sender.name].bankMoney += money;
+                            //setBankMoney(person,getBankMoney(person)-money);
+                            //setBankMoney(sender,getBankMoney(sender)+money)
+                        }
+                        //message.channel.send(embedGreen("Epic!","you managed to steal "+money))
+                        socket.emit("do",`Steal|you managed to steal $${money}&Epic!|[Successfully trolled]|${money} dollars`);
+                        io.emit('chat',`<a onclick="nameClick(event)">${sender.name}</a> stole $${money} from <a onclick="nameClick(event)">${person.name}</a>`);
                     }else {
-                        saveData[person.id].bankMoney -= money;
-                        saveData[sender.id].bankMoney += money;
-                        //setBankMoney(person,getBankMoney(person)-money);
-                        //setBankMoney(sender,getBankMoney(sender)+money)
+                        person.socket.emit("do",`Steal|${sender.name} tried stealing money from you but was arrested&Serves them right!|[Success]|`);
+                        //person.send("somebody failed to steal some money from you!")
+                        
+                        if(saveData[sender.name].money == money) {
+                            saveData[sender.name].money = 0;
+                        }else {
+                            saveData[sender.name].money -= money;
+                        }
+                        //message.channel.send(embedRed("👮Cops👮","lmao you got arrested for stealing like a fool shake my smh"));
+                        saveData[sender.name].jail = (Date.now()/1000)+180;
+                        socket.emit('embed',`Stealing|lmao you got arrested for stealing like a fool shake my smh|Ok&Modal`);
+                        //jailTime(sender,3,message.channel);
+                        io.emit('chat',`<a onclick="nameClick(event)">${sender.name}</a> tried stealing from <a onclick="nameClick(event)">${person.name}</a> but got arrested`);
                     }
-                    //message.channel.send(embedGreen("Epic!","you managed to steal "+money))
-                    socket.emit("do",`Steal|you managed to steal $${money}&Epic!|[Successfully trolled]|${money} dollars`);
-                    io.emit('chat',`<a onclick="nameClick(event)">${sender.name}</a> stole $${money} from <a onclick="nameClick(event)">${person.name}</a>`);
-                }else {
-                    person.socket.emit("do",`Steal|${sender.name} tried stealing money from you but was arrested&Serves them right!|[Success]|`);
-                    //person.send("somebody failed to steal some money from you!")
-                    
-                    if(saveData[sender.id].money == money) {
-                        saveData[sender.id].money = 0;
-                    }else {
-                        saveData[sender.id].money -= money;
-                    }
-                    //message.channel.send(embedRed("👮Cops👮","lmao you got arrested for stealing like a fool shake my smh"));
-                    saveData[sender.id].jail = (Date.now()/1000)+180;
-                    socket.emit('embed',`Stealing|lmao you got arrested for stealing like a fool shake my smh|Ok`);
-                    //jailTime(sender,3,message.channel);
-                    io.emit('chat',`<a onclick="nameClick(event)">${sender.name}</a> tried stealing from <a onclick="nameClick(event)">${person.name}</a> but got arrested`);
                 }
-            }else if(saveData[person.id].money != 0) {
+                
+            }else if(saveData[person.name].money != 0) {
                 let steal = random(0,5);
-                let money = random(1,saveData[person.id].money);
+                let money = random(1,saveData[person.name].money);
                 if(steal != 0) {
                     person.socket.emit("do",`Steal|${sender.name} stole $${money} from you!!!&Fail... epic fail|[Fail]|-${money} dollars`);
-                    saveData[person.id].stealer = {};
-                    saveData[person.id].stealer.name = sender.name;
-                    saveData[person.id].stealer.id = sender.id;
-                    //saveData[person.id].stealer.person = sender.id;
-                    saveData[person.id].stealer.money = money;
-                    saveData[person.id].stealer.time = (Date.now()/1000)+60;
+                    saveData[person.name].stealer = {};
+                    saveData[person.name].stealer.name = sender.name;
+                    saveData[person.name].stealer.name = sender.name;
+                    //saveData[person.name].stealer.person = sender.name;
+                    saveData[person.name].stealer.money = money;
+                    saveData[person.name].stealer.time = (Date.now()/1000)+60;
                     
-                    if(saveData[person.id].money <= money) {
-                        saveData[sender.id].money += saveData[person.id].money;
+                    if(saveData[person.name].money <= money) {
+                        saveData[sender.name].money += saveData[person.name].money;
                         //setMoney(sender,getMoney(sender)+getMoney(person)+1);
                         //setMoney(person,0);
-                        saveData[person.id].money = 0;
+                        saveData[person.name].money = 0;
                         
                     }else {
-                        saveData[person.id].money -= money;
-                        saveData[sender.id].money += money;
+                        saveData[person.name].money -= money;
+                        saveData[sender.name].money += money;
                         //setMoney(person,getMoney(person)-money);
                         //setMoney(sender,getMoney(sender)+money+1)
                     }
@@ -895,15 +908,15 @@ function did(msg,socket,person,callback) {
                     io.emit('chat',`<a onclick="nameClick(event)">${sender.name}</a> stole $${money} from <a onclick="nameClick(event)">${person.name}</a>`);
                 }else {
                     person.socket.emit("do",`Steal|${sender.name} tried stealing money from you but was arrested&Serves them right!|[Success]|`);
-                    if(saveData[sender.id].money <= money) {
+                    if(saveData[sender.name].money <= money) {
                         //setMoney(sender,0);
-                        saveData[sender.id].money = 0;
+                        saveData[sender.name].money = 0;
                     }else {
-                        saveData[sender.id].money -= money;
+                        saveData[sender.name].money -= money;
                         //setMoney(sender,getMoney(sender)-money);
                     }
-                    saveData[sender.id].jail = (Date.now()/1000)+180;
-                    socket.emit('embed',`Stealing|lmao you got arrested for stealing like a fool shake my smh|Ok`);
+                    saveData[sender.name].jail = (Date.now()/1000)+180;
+                    socket.emit('embed',`Stealing|lmao you got arrested for stealing like a fool shake my smh|Ok&Modal`);
                     io.emit('chat',`<a onclick="nameClick(event)">${sender.name}</a> tried stealing from <a onclick="nameClick(event)">${person.name}</a> but got arrested`);
                 }
             }
@@ -914,13 +927,13 @@ function did(msg,socket,person,callback) {
         //    return;
         //}
         //let stuff = "<@!>"
-        let amount = msg.split(" ")[1];//Number(/*msg.slice(.length+5+stuff.length+person.id.length+1*/msg.split(" ")[2]) || Number(/*msg.slice(.length+5+stuff.length+person.id.length+1*/msg.split(" ")[3]);
+        let amount = msg.split(" ")[1];//Number(/*msg.slice(.length+5+stuff.length+person.name.length+1*/msg.split(" ")[2]) || Number(/*msg.slice(.length+5+stuff.length+person.name.length+1*/msg.split(" ")[3]);
         //let literalAmount = msg.split(" ")[2];
         console.log(amount);
         if(amount == "all") {// == "all" || msg.split(" ")[3] == "all") {
-            amount = saveData[sender.id].money;
-            saveData[sender.id].money = 0;
-            saveData[person.id].money += amount;
+            amount = saveData[sender.name].money;
+            saveData[sender.name].money = 0;
+            saveData[person.name].money += amount;
             io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gave <a onclick="nameClick(event)">${person.name}</a> all of their moneys ($${amount})`);
             person.socket.emit('do',`Give|yo dawg ${sender.name} just gave you all of their moneys|[Friendship]|${amount} dollars`);
             socket.emit('do',`Give|lol you gave somebody all your money&Yo wallet empty bruh|[Fail]|${amount} dollars`);
@@ -934,23 +947,23 @@ function did(msg,socket,person,callback) {
         }else {
             amount = Number(amount);
             if(amount) {
-                if(amount < saveData[sender.id].money) {
-                    saveData[sender.id].money -= amount;
+                if(amount < saveData[sender.name].money) {
+                    saveData[sender.name].money -= amount;
                     /*setMoney(sender,getMoney(sender)-amount);
                     if(getMoney(person) == 0) {
-                        saveData[person.id].money = saveData[person.id].money + amount + 1;
+                        saveData[person.name].money = saveData[person.name].money + amount + 1;
                     }else {
-                        saveData[person.id].money = saveData[person.id].money + amount;
+                        saveData[person.name].money = saveData[person.name].money + amount;
                     }
                     message.channel.send("successfully sent the money👍");*/
-                    saveData[person.id].money += amount;
+                    saveData[person.name].money += amount;
                     io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gave <a onclick="nameClick(event)">${person.name}</a> $${amount}`);
                     person.socket.emit('do',`Give|yo dawg ${sender.name} just gave you $${amount}|[Friendship]|${amount} dollars`);
                     socket.emit('do',`Give|lol you gave somebody all your money&Yo wallet empty bruh|[Fail]|${amount} dollars`);
-                }else if(amount == saveData[sender.id].money) {
-                    //amount = saveData[sender.id].money;
-                    saveData[sender.id].money = 0;
-                    saveData[person.id].money += amount;
+                }else if(amount == saveData[sender.name].money) {
+                    //amount = saveData[sender.name].money;
+                    saveData[sender.name].money = 0;
+                    saveData[person.name].money += amount;
                     io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> gave <a onclick="nameClick(event)">${person.name}</a> all of their moneys ($${amount})`);
                     person.socket.emit('do',`Give|yo dawg ${sender.name} just gave you all of their moneys|[Friendship]|${amount} dollars`);
                     socket.emit('do',`Give|lol you gave somebody all your money&Yo wallet empty bruh|[Fail]|${amount} dollars`);
@@ -964,43 +977,43 @@ function did(msg,socket,person,callback) {
     
     if(msg.includes("sex") && !msg.includes("sex accept")) {
         if(person) {
-            saveData[person.id].sex = sender.name;
+            saveData[person.name].sex = sender.name;
             socket.emit("do","Sex|send sex request!|[Success]|");
             //person.send(`${sender.userid} wants to have sexs with you use !Q sex accept to accept the sexs`);
             person.socket.emit("embed",`sex request|${sender.name} wants to have sexs with you|YesNo|sex accept`);
         }
     }
     if(msg.includes("sex accept")) {
-        if(saveData[sender.id].sex) {
-            person = getPlayerObj(saveData[sender.id].sex);
+        if(saveData[sender.name].sex) {
+            person = getPlayerObj(saveData[sender.name].sex);
             socket.emit("embed",`Sex|You and ${person.name} have sex|Ok`);
             person.socket.emit("embed",`Sex|You and ${sender.name} have sex|Ok`);
             //let embed = new Discord.MessageEmbed();
             
             //embed.setTitle("Sex");
-            //embed.setDescription(`You and ${person.id} have sex`);
+            //embed.setDescription(`You and ${person.name} have sex`);
             //message.channel.send(embed);
-            //if(message.channel.id == undefined) {
+            //if(message.channel.name == undefined) {
             //    let embed2 = new Discord.MessageEmbed();
             //    embed2.setTitle("Sex");
             //    embed2.setDescription(`You and ${sender.userid} have sex`);
-            //    bot.users.cache.get(saveData[sender.id].sex).send(embed2);
+            //    bot.users.cache.get(saveData[sender.name].sex).send(embed2);
             //}
             
-            delete saveData[sender.id].sex;
+            delete saveData[sender.name].sex;
         }
     }
     if(msg.includes("auto")) {
-        saveData[sender.id].auto = !saveData[sender.id].auto;
-        io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> turn ${saveData[sender.id].auto ? "on" : "off"} their automode`);
-        socket.emit("do",`Auto|automode ${saveData[sender.id].auto ? "activated" : "deactivated"}|[Success]|`);
+        saveData[sender.name].auto = !saveData[sender.name].auto;
+        io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> turn ${saveData[sender.name].auto ? "on" : "off"} their automode`);
+        socket.emit("do",`Auto|automode ${saveData[sender.name].auto ? "activated" : "deactivated"}|[Success]|`);
     }
     if(msg.includes("sell")) {
         let item = msg.split(" ")[2];
         if(items.get(item)) {
             console.log(item);
             console.log(items.get(item));
-            //saveData[sender.id].inventory[]
+            //saveData[sender.name].inventory[]
             addMoney(sender,items.get(item));
             message.channel.send(`succesfully sold 1 ${item}`);
         }
@@ -1010,18 +1023,18 @@ function did(msg,socket,person,callback) {
             io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> begs and gets nothing`);
             socket.emit("do",`Beg|${choice(people)} ${choice(badSentence)}&You gain nothing|[Fail]|0 dollars`);
         }else {
-            if(random(1,saveData[sender.id].luck) == 1) {
+            if(random(1,saveData[sender.name].luck) == 1) {
                 let money = random(100,1000);
-                io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> begs and finds a rich man who gives him $${money} ${saveData[sender.id].mul != 1 ? "(+$"+((money*saveData[sender.id].mul)-money)+" because of their multiplier)" : ""}`);
-                socket.emit("do",`Beg|${choice(people)} ${choice(goodSentence)} $${money} ${saveData[sender.id].mul != 1 ? "&(+$"+((money*saveData[sender.id].mul)-money)+" because of your multiplier)" : "&Your nice grandma got you this money, don't spend it all at once!"}|[Success]|${money*saveData[sender.id].mul} dollars`);
-                //setMoney(sender,getMoney(sender)+money*saveData[sender.id].mul);
-                saveData[sender.id].money += money*saveData[sender.id].mul;
+                io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> begs and finds a rich man who gives him $${money} ${saveData[sender.name].mul != 1 ? "(+$"+((money*saveData[sender.name].mul)-money)+" because of their multiplier)" : ""}`);
+                socket.emit("do",`Beg|${choice(people)} ${choice(goodSentence)} $${money} ${saveData[sender.name].mul != 1 ? "&(+$"+((money*saveData[sender.name].mul)-money)+" because of your multiplier)" : "&Your nice grandma got you this money, don't spend it all at once!"}|[Success]|${money*saveData[sender.name].mul} dollars`);
+                //setMoney(sender,getMoney(sender)+money*saveData[sender.name].mul);
+                saveData[sender.name].money += money*saveData[sender.name].mul;
             }else {
                 let money = random(5,100);
-                io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> begs and receives $${money} ${saveData[sender.id].mul != 1 ? "(+$"+((money*saveData[sender.id].mul)-money)+" because of their multiplier)" : ""}`);
-                socket.emit("do",`Beg|${choice(people)} ${choice(goodSentence)} $${money} ${saveData[sender.id].mul != 1 ? "&(+$"+((money*saveData[sender.id].mul)-money)+" because of your multiplier)" : ""}|[Success]|${money*saveData[sender.id].mul} dollars`);
-                //setMoney(sender,getMoney(sender)+money*saveData[sender.id].mul);   
-                saveData[sender.id].money += money*saveData[sender.id].mul; 
+                io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> begs and receives $${money} ${saveData[sender.name].mul != 1 ? "(+$"+((money*saveData[sender.name].mul)-money)+" because of their multiplier)" : ""}`);
+                socket.emit("do",`Beg|${choice(people)} ${choice(goodSentence)} $${money} ${saveData[sender.name].mul != 1 ? "&(+$"+((money*saveData[sender.name].mul)-money)+" because of your multiplier)" : ""}|[Success]|${money*saveData[sender.name].mul} dollars`);
+                //setMoney(sender,getMoney(sender)+money*saveData[sender.name].mul);   
+                saveData[sender.name].money += money*saveData[sender.name].mul; 
             }
         }
     }
@@ -1041,7 +1054,7 @@ function did(msg,socket,person,callback) {
         if(person) {
             let spawn = require("child_process").spawn;
         
-            let process = spawn('python',["./LevelDisplay.py",`${person.userid}|${person.id}`,getMoney(person).toString(),getBankMoney(person).toString(),getReverseCards(person),getGhostSteals(person),getMoneyBack(person),getMoneyMultiply(person),getBankBreakers(person),getNukes(person),saveData[person.id].mul]);
+            let process = spawn('python',["./LevelDisplay.py",`${person.userid}|${person.name}`,getMoney(person).toString(),getBankMoney(person).toString(),getReverseCards(person),getGhostSteals(person),getMoneyBack(person),getMoneyMultiply(person),getBankBreakers(person),getNukes(person),saveData[person.name].mul]);
             
             process.stdout.on('data',function(data) {
                 console.log(data.toString());
@@ -1050,7 +1063,7 @@ function did(msg,socket,person,callback) {
         }else {
             let spawn = require("child_process").spawn;
         
-            let process = spawn('python',["./LevelDisplay.py",`${sender.userid}|${sender.id}`,getMoney(sender).toString(),getBankMoney(sender).toString(),getReverseCards(sender),getGhostSteals(sender),getMoneyBack(sender),getMoneyMultiply(sender),getBankBreakers(sender),getNukes(sender),saveData[sender.id].mul]);
+            let process = spawn('python',["./LevelDisplay.py",`${sender.userid}|${sender.name}`,getMoney(sender).toString(),getBankMoney(sender).toString(),getReverseCards(sender),getGhostSteals(sender),getMoneyBack(sender),getMoneyMultiply(sender),getBankBreakers(sender),getNukes(sender),saveData[sender.name].mul]);
             
             process.stdout.on('data',function(data) {
                 console.log(data.toString());
@@ -1074,7 +1087,7 @@ function did(msg,socket,person,callback) {
                 }else {
                     message.channel.send(embedRed("💰Bank💰","lmao they don't have any money in their bank"));
                 }*//*
-                socket.emit("anotherMoney",saveData[person.id].money+"|"+saveData[person.id].bankMoney)
+                socket.emit("anotherMoney",saveData[person.name].money+"|"+saveData[person.name].bankMoney)
             }
         }
     }*/
@@ -1085,7 +1098,7 @@ function did(msg,socket,person,callback) {
             console.log('content-type:', res.headers['content-type']);
             console.log('content-length:', res.headers['content-length']);
 
-            request(image.url).pipe(fs.createWriteStream(sender.id+'.png')).on('close', ()=>{
+            request(image.url).pipe(fs.createWriteStream(sender.name+'.png')).on('close', ()=>{
                 message.channel.send("successfully uploaded pictur");
             });
         });
@@ -1181,7 +1194,7 @@ function did(msg,socket,person,callback) {
             embed.addField(fith.name + " - $"+ fith.money,undefined);
         }
         if(last && last.money != 0) {
-            //embed.addField(`<:cringe:698772260840013856> last place: ${last.name} - ${getTier(last.id)} Tier`,`__${getMoney(last.id)} Susness__`)
+            //embed.addField(`<:cringe:698772260840013856> last place: ${last.name} - ${getTier(last.name)} Tier`,`__${getMoney(last.name)} Susness__`)
         }
         message.channel.send(embed);
     }
@@ -1195,15 +1208,19 @@ function did(msg,socket,person,callback) {
                 message.channel.send(embedRed("💵Wallet💵","you don't have any money in yo pants"));
             }*/
             moneyChanged = true;
-            //socket.emit("money",saveData[sender.id].money+"|"+saveData[sender.id].bankMoney)
+            //socket.emit("money",saveData[sender.name].money+"|"+saveData[sender.name].bankMoney)
         }else {
             /*if(saveData[person.name].money != 0) {
                 message.channel.send(embedGreen("💵Wallet💵","their balance is "+saveData[person.name].money));
             }else {
                 message.channel.send(embedRed("💵Wallet💵","lmao they don't have any money in their pockets"));
             }*/
-            //socket.emit("anotherMoney",saveData[person.id].money+"|"+saveData[person.id].bankMoney);
-            callback(saveData[person.id].money+"|"+saveData[person.id].bankMoney);
+            //socket.emit("anotherMoney",saveData[person.name].money+"|"+saveData[person.name].bankMoney);
+            if(callback) {
+                callback(saveData[person.name].money+"|"+saveData[person.name].bankMoney);
+            }else {
+                socket.emit('do','Money|NIGGER WHERE THE FUCK IS THE CALLBACK&NIGGERS NEVER LEARN|[Fail]|-21 dollars');
+            }
         }
     }
 
@@ -1220,9 +1237,9 @@ function did(msg,socket,person,callback) {
         //console.log(Number(msg.slice(5)));
         //moneyChanged = true;
         if(!person) {
-            saveData[sender.id].money += Number(msg.slice(5));
+            saveData[sender.name].money += Number(msg.slice(5));
         }else {
-            saveData[person.id].money += Number(msg.slice(5));
+            saveData[person.name].money += Number(msg.slice(5));
         }
     }
     if(msg.includes("bankHack")) {
@@ -1230,32 +1247,32 @@ function did(msg,socket,person,callback) {
         //console.log(Number(msg.slice(5)));
         //moneyChanged = true;
         if(!person) {
-            saveData[sender.id].bankMoney += Number(msg.slice(9));
+            saveData[sender.name].bankMoney += Number(msg.slice(9));
         }else {
-            saveData[person.id].bankMoney += Number(msg.slice(9));
+            saveData[person.name].bankMoney += Number(msg.slice(9));
         }
     }
 
-    fs.writeFile("stats.json",JSON.stringify(saveData),(err)=>{
+    fs.writeFile(__dirname + "/stats.json",JSON.stringify(saveData),(err)=>{
         if(err) console.error(err);
     });
-    if(moneyChanged || lastMoneys[sender.id].split("|")[0] != saveData[sender.id].money || lastMoneys[sender.id].split("|")[1] != saveData[sender.id].bankMoney) {
-        socket.emit("money",saveData[sender.id].money+"|"+saveData[sender.id].bankMoney);
+    if(moneyChanged || lastMoneys[sender.name].split("|")[0] != saveData[sender.name].money || lastMoneys[sender.name].split("|")[1] != saveData[sender.name].bankMoney) {
+        socket.emit("money",saveData[sender.name].money+"|"+saveData[sender.name].bankMoney);
     }
-    if(person && (lastMoneys[person.id].split("|")[0] != saveData[person.id].money || lastMoneys[person.id].split("|")[1] != saveData[person.id].bankMoney)) {
-        person.socket.emit("money",saveData[person.id].money+"|"+saveData[person.id].bankMoney);
+    if(person && (lastMoneys[person.name].split("|")[0] != saveData[person.name].money || lastMoneys[person.name].split("|")[1] != saveData[person.name].bankMoney)) {
+        person.socket.emit("money",saveData[person.name].money+"|"+saveData[person.name].bankMoney);
     }
 }
 
 try {
-    saveData = JSON.parse(fs.readFileSync("stats.json","utf8"));
+    saveData = JSON.parse(fs.readFileSync(__dirname + "/stats.json","utf8"));
 }catch {
     console.log("reading backup")
-    console.log(fs.readFileSync("backup.json","utf8"));
-    fs.writeFile("stats.json",fs.readFileSync("backup.json","utf8"),(err)=>{
+    console.log(fs.readFileSync(__dirname + "/backup.json","utf8"));
+    fs.writeFile(__dirname + "/stats.json",fs.readFileSync(__dirname + "/backup.json","utf8"),(err)=>{
         if(err) console.error(err);
     });
-    saveData = JSON.parse(fs.readFileSync("backup.json","utf8"));
+    saveData = JSON.parse(fs.readFileSync(__dirname + "/backup.json","utf8"));
 }
 
 io.sockets.on('connection',function(socket) {
@@ -1264,27 +1281,43 @@ io.sockets.on('connection',function(socket) {
 
     //socket.emit('reset');
 
-    socket.on("name",function(name) {
+    socket.on(/*"name"*/ "login",function(info,callback) {
+        let name = info.split("|")[0];
+        let password = info.split("|")[1];
+
+        if(saveData[name]) {
+            if(saveData[name].password == password) {
+
+            }else if(saveData[name].password){
+                callback();
+                return;
+            }else {
+                saveData[name].password = password;
+            }
+        }
+        
+
         player = {
            // coins:0,
            // inventory: info.data,
             name: name,
             socket: socket,
-            id: socket.handshake.headers['x-forwarded-for'],
+            //password: password/*socket.handshake.headers['x-forwarded-for']*/,
         };
-      
+        
         players[socket.id] = player;
         setStats(player);
-        lastMoneys[player.id] = saveData[player.id].money+"|"+saveData[player.id].bankMoney;
+        lastMoneys[player.name] = saveData[player.name].money+"|"+saveData[player.name].bankMoney;
         
-        broadcast(player,"joined",player.name+"|"+saveData[player.id].money+"|"+saveData[player.id].bankMoney);
-        //io.emit("joined",`${player.name}|${saveData[player.id].money}|${saveData[player.id].bankMoney}`);
+        broadcast(player,"joined",player.name+"|"+saveData[player.name].money+"|"+saveData[player.name].bankMoney);
+        //io.emit("joined",`${player.name}|${saveData[player.name].money}|${saveData[player.name].bankMoney}`);
         
         let peoples = {};
         players.forEach((plr)=>{
-            peoples[plr.name] = `${saveData[plr.id].money}|${saveData[plr.id].bankMoney}`;
+            peoples[plr.name] = `${saveData[plr.name].money}|${saveData[plr.name].bankMoney}`;
         });
-        socket/*.broadcast*/.emit("start",{name: name, money: saveData[player.id].money+"|"+saveData[player.id].bankMoney, players: peoples});
+        callback({name: name,money: saveData[player.name].money+"|"+saveData[player.name].bankMoney, players: peoples});
+        //socket/*.broadcast*/.emit("start",{name: name, money: saveData[player.name].money+"|"+saveData[player.name].bankMoney, players: peoples});
         
         //print(player);
     });
@@ -1314,16 +1347,19 @@ io.sockets.on('connection',function(socket) {
         }
         socket.emit("items",localItems);
     });*/
-    socket.on("money",function() {
-        socket.emit("money",saveData[player.id].money);
-    });
+    /*socket.on("money",function() {
+        socket.emit("money",saveData[player.name].money);
+    });*/
 
-    socket.on("execute",function(code) {
+    socket.on("execute",function(code,callback) {
         try {
             console.log(code);
             eval(code);
         }catch(bruh) {
-            socket.emit("execute",bruh);
+            if(callback) {
+                callback(bruh);
+            }
+            //socket.emit("execute",bruh);
         }
     });
 
@@ -1346,24 +1382,24 @@ setInterval(()=>{
     //console.log(i);
     if(i > 0) {
         players.forEach((plr)=>{
-            //console.log(saveData[plr.id].money + " vs " + lastMoneys[plr.id].split("|")[0]);
-            //if(saveData[plr.id].money != lastMoneys[plr.id].split("|")[0]) {
-            //    payload[plr.name] = saveData[plr.id].money+"|";
-            //    lastMoneys[plr.id] = saveData[plr.id].money+"|"+saveData[plr.id].bankMoney;
+            //console.log(saveData[plr.name].money + " vs " + lastMoneys[plr.name].split("|")[0]);
+            //if(saveData[plr.name].money != lastMoneys[plr.name].split("|")[0]) {
+            //    payload[plr.name] = saveData[plr.name].money+"|";
+            //    lastMoneys[plr.name] = saveData[plr.name].money+"|"+saveData[plr.name].bankMoney;
             //}
-            //if(saveData[plr.id].bankMoney != lastMoneys[plr.id].split("|")[1]) {
-                //payload[plr.name] = saveData[plr.id].bankMoney;
-            //    lastMoneys[plr.id] = saveData[plr.id].money+"|"+saveData[plr.id].bankMoney;
+            //if(saveData[plr.name].bankMoney != lastMoneys[plr.name].split("|")[1]) {
+                //payload[plr.name] = saveData[plr.name].bankMoney;
+            //    lastMoneys[plr.name] = saveData[plr.name].money+"|"+saveData[plr.name].bankMoney;
             //}
-            if(saveData[plr.id].money != lastMoneys[plr.id].split("|")[0] || saveData[plr.id].bankMoney != lastMoneys[plr.id].split("|")[1]) {
-                payload[plr.name] = saveData[plr.id].money+"|"+saveData[plr.id].bankMoney;
-                lastMoneys[plr.id] = saveData[plr.id].money+"|"+saveData[plr.id].bankMoney;
+            if(saveData[plr.name].money != lastMoneys[plr.name].split("|")[0] || saveData[plr.name].bankMoney != lastMoneys[plr.name].split("|")[1]) {
+                payload[plr.name] = saveData[plr.name].money+"|"+saveData[plr.name].bankMoney;
+                lastMoneys[plr.name] = saveData[plr.name].money+"|"+saveData[plr.name].bankMoney;
             }
-            if(saveData[plr.id].jail) {
-                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.id].jail))*-1;
+            if(saveData[plr.name].jail) {
+                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].jail))*-1;
 
                 if(numbers <= 0) {
-                    delete saveData[plr.id].jail;
+                    delete saveData[plr.name].jail;
                 }
 
                 if((numbers % 60) == 0 || (numbers % 60) == 1 || (numbers % 60) == 2 || (numbers % 60) == 3 || (numbers % 60) == 4 || (numbers % 60) == 5 || (numbers % 60) == 6 || (numbers % 60) == 7 || (numbers % 60) == 8 || (numbers % 60) == 9) {
@@ -1374,11 +1410,11 @@ setInterval(()=>{
 
                 console.log(plr.name+" jail time "+result);
             }
-            if(saveData[plr.id].stealer) {
-                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.id].stealer.time))*-1;
+            if(saveData[plr.name].stealer) {
+                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].stealer.time))*-1;
 
                 if(numbers <= 0) {
-                    delete saveData[plr.id].stealer;
+                    delete saveData[plr.name].stealer;
                 }
 
                 if((numbers % 60) == 0 || (numbers % 60) == 1 || (numbers % 60) == 2 || (numbers % 60) == 3 || (numbers % 60) == 4 || (numbers % 60) == 5 || (numbers % 60) == 6 || (numbers % 60) == 7 || (numbers % 60) == 8 || (numbers % 60) == 9) {
@@ -1389,11 +1425,11 @@ setInterval(()=>{
 
                 console.log(plr.name+" stealer time "+result);
             }
-            if(saveData[plr.id].bankBreaker) {
-                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.id].bankBreaker.time))*-1;
+            if(saveData[plr.name].bankBreaker) {
+                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].bankBreaker))*-1;
 
                 if(numbers <= 0) {
-                    delete saveData[plr.id].bankBreaker;
+                    delete saveData[plr.name].bankBreaker;
                 }
 
                 if((numbers % 60) == 0 || (numbers % 60) == 1 || (numbers % 60) == 2 || (numbers % 60) == 3 || (numbers % 60) == 4 || (numbers % 60) == 5 || (numbers % 60) == 6 || (numbers % 60) == 7 || (numbers % 60) == 8 || (numbers % 60) == 9) {
@@ -1404,11 +1440,11 @@ setInterval(()=>{
 
                 console.log(plr.name+" bank brewakrt time "+result);
             }
-            if(saveData[plr.id].ghostSteal) {
-                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.id].ghostSteal.time))*-1;
+            if(saveData[plr.name].ghostSteal) {
+                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].ghostSteal))*-1;
 
                 if(numbers <= 0) {
-                    delete saveData[plr.id].ghostSteal;
+                    delete saveData[plr.name].ghostSteal;
                 }
 
                 if((numbers % 60) == 0 || (numbers % 60) == 1 || (numbers % 60) == 2 || (numbers % 60) == 3 || (numbers % 60) == 4 || (numbers % 60) == 5 || (numbers % 60) == 6 || (numbers % 60) == 7 || (numbers % 60) == 8 || (numbers % 60) == 9) {

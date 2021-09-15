@@ -59,21 +59,21 @@
         .vignette {
             background: radial-gradient(500px at center,rgba(0,0,0,0), rgb(0,0,0));
         }
-        #nameDiv {
-            transform: translate(0px, -150px);
+        #nameStuff {
+            transform: translate(0px, -300px);
             transition: transform .5s ease-in-out;
         }
         #main {
             transition: opacity .5s ease-in-out;
         }
-        @keyframes deez {
+        /*@keyframes deez {
             0% {transform: translate(0px, -150px);}
             100% {transform: translate(0px, 0px);}
         }
         @keyframes backward {
             0% {transform: translate(0px, 0px);}
             100% {transform: translate(0px, -150px);}
-        }
+        }*/
         /*#chat::-webkit-scrollbar,*/.framed::-webkit-scrollbar {
             display: none;
         }
@@ -456,13 +456,27 @@
             z-index: 3;
             opacity: 0.5;
         }
+        #nameForm > * {
+            width: 100%;
+            box-sizing: border-box;
+            height: 25px;
+        }
+        input[type="submit"] {
+            cursor: pointer;
+        }
+        #loginText {
+            font-size: 20px;
+            margin-top: 25px;
+            margin-bottom: 0;
+            transition: font-size,opacity 1s;
+        }
     </style>
 </head>
 <body>
-    <div id="overlay" style="display: none;"> <!-- bro for some reason i can't do onclick :( -->
+    <div id="overlay" style="display: none;"> <!-- bro for some reason i can't do onclick (maybe because clear is undefined) :( -->
 
     </div>
-    <div style="display:none;">
+    <div style="display: none">
         <div id="notecopy" class="framed tooltip" style="inset: auto;">
             <div style="padding:8px 4px;min-width:350px;">
                 <div class="close" onclick="new sound('https://magicquest.github.io/sounds/tick.mp3').play();this.parentElement.parentElement.remove();">x</div>
@@ -508,17 +522,20 @@
             </div>
         </div>
     </div>
-    <center>
+    <center id="nameStuff">
         <div class="ccDiv vignette" id="nameDiv">
-            <h1>
+            <h1 style="color:peru;text-shadow: 2px 2px rgb(117, 59, 0);">Bot Game</h1>
+            <!--h1>
                 Enter your name:
-            </h1>
+            </h1-->
             <form id="nameForm">
-                <input>
-                <button class="ccButton">
-                    Submit
-                </button>
+                <input autocomplete="username" placeholder="Username">
+                <input autocomplete="current-password" placeholder="Password" type="password" style="margin-top: 5px;">
+                <input type="submit" class="ccButton" style="display: block; margin-top: 5px;">
             </form>
+            <p id="loginText" style="color: red;opacity: 0;">
+                Wrong password bitch
+            </p>
         </div>
     </center>
     <div id="main" style="opacity: 0; display: none;">
@@ -531,9 +548,9 @@
             <!--img src="stuff/img/bank.png" class="icon"-->
             <h1 id="bankMoney" class="money">$</h1>
         </center>
-        <div id="tempButtons" style="width: 205px;display: inline-block">
+        <div id="tempButtons" style="width: 415px;display: inline-block">
             <button class="tempButton" onclick="socket.emit('do','hack 1')">
-                get<br>moeny
+                get moeny
             </button>
             <button class="tempButton" onclick="socket.emit('do','bankHack 1')">
                 get bank moeny
@@ -556,7 +573,7 @@
             <button class="tempButton" onclick="socket.emit('do','deposit all');">
                 deposit
             </button>
-            <button class="tempButton"" onclick="socket.emit('do','deposit 10');">
+            <button class="tempButton" onclick="socket.emit('do','deposit 10');">
                 deposit 10
             </button>
             <button class="tempButton" onclick="socket.emit('do','withdraw all');">
@@ -572,7 +589,7 @@
                 buy ghost stel
             </button>
             <button class="tempButton" onclick="socket.emit('do','buy bank breaker');">
-                buy bank beaner
+                buy bank nigger
             </button>
             <button class="tempButton" onclick="socket.emit('do','buy money back');">
                 buy money bank
@@ -597,6 +614,9 @@
             <div class="crate" style="background-image: url('stuff/img/inventory.png');background-position: center;" onclick="crateClick(this);">
 
             </div>
+            <!--div class="crate" style="background-image: url('stuff/img/reversecard.png');background-position: center;" onclick="socket.emit('do','buy reverse card')" onmouseover="" onmousemove="">
+
+            </div-->
             <div class="crate" style="background-image: url('stuff/img/jail.png');background-position: center;" onclick="crateClick(this);">
                 <div class="pieTimer" id="jailTimer" style="background-position: 0px 0px;"></div>
             </div>
@@ -657,6 +677,7 @@
         var embeds = document.getElementById("embedAnchor");
         var overlay = document.getElementById("overlay");
         //var tooltips = document.getElementById("tooltipAnchor");
+        var items = new Map();
 
         var items;
         var jobs;
@@ -690,9 +711,12 @@
             embeds.innerHTML = "";
             overlay.style.display = "none";
             overlay.style.backgroundColor = "";
-            if(overlay.getAttribute("onclicke") != "") {
-                overlay.onclick = overlay.getAttribute("onclicke");//.setAttribute("onclick","");
-            }
+            //if(overlay.getAttribute("onmousedowne")) {
+                //console.log("bruh");
+                //console.log(overlay.getAttribute("onmousedowne"));
+                //overlay.onmousedown = overlay.getAttribute("onmousedowne");//.setAttribute("onclick","");
+                overlay.onmousedown = clear;
+            //}
         }
 
         /*function buttonShit(callback) {
@@ -704,7 +728,7 @@
         function createEmbed(name,content,mode,callback) {
             let leEmbed = document.createElement("div");//document.getElementById("embedcopy").cloneNode();
             let modal = mode.includes("Modal");
-            mode = mode.slice(0,mode.indexOf("&"));
+            mode = mode.indexOf("&") != -1 ? mode.slice(0,mode.indexOf("&")) : mode;
             leEmbed.id = "embed";
             leEmbed.className = "framed";
             leEmbed.innerHTML = document.getElementById("embedcopy").innerHTML;
@@ -715,13 +739,14 @@
             //    modal = mode.includes
             //}
             if(mode == "Ok") {
+                //console.log("ok");
                 buttons.children[1].remove();
                 buttons.firstElementChild.innerHTML = "Ok";
-                buttons.firstElementChild.setAttribute("onclick","new sound('https://magicquest.github.io/sounds/tick.mp3').play();clear();");
-                /*buttons.firstElementChild.onclick = ()=>{
+                //buttons.firstElementChild.setAttribute("onclick","new sound('https://magicquest.github.io/sounds/tick.mp3').play();clear();");
+                buttons.firstElementChild.onclick = ()=>{
                     new sound('https://magicquest.github.io/sounds/tick.mp3').play();
                     clear();
-                };*/
+                };
             }else if(mode == "YesNo") {
                 //buttons.firstElementChild.setAttribute("onclick","new sound('https://magicquest.github.io/sounds/tick.mp3').play();clear();callback();");
                 buttons.firstElementChild.onclick = ()=>{
@@ -748,8 +773,8 @@
                 },finish() {
                     embeds.appendChild(leEmbed);
                     if(modal) {
-                        overlay.setAttribute("onclicke",overlay.onclick);
-                        overlay.setAttribute("onclick","");//.setAttribute("onclick","");
+                        //overlay.setAttribute("onmousedowne",overlay.onmousedown);
+                        overlay.onmousedown = ""//setAttribute("onmousedown","");//.setAttribute("onclick","");
                     }
                     overlay.style.display = "";
                     overlay.style.backgroundColor = "rgba(0,0,0,.25)";
@@ -759,8 +784,8 @@
             console.log(content);
             embeds.appendChild(leEmbed);
             if(modal) {
-                overlay.setAttribute("onclicke",overlay.onclick);
-                overlay.setAttribute("onclick","");//.setAttribute("onclick","");
+                //overlay.setAttribute("onmousedowne",overlay.onmousedown);
+                overlay.onmousedown = ""//setAttribute("onmousedown","");//.setAttribute("onclick","");
             }
             overlay.style.display = "";
             overlay.style.backgroundColor = "rgba(0,0,0,.25)";
@@ -816,7 +841,7 @@
             }
         });
         
-        overlay.onmousedown = clear;
+        overlay.onmousedown = clear;//.setAttribute("onmousedown","clear();");
 
         /*for(craet of document.getElementById("crates").children) {
             //.forEach((craet)=>{
@@ -827,7 +852,7 @@
         
 
         setTimeout(()=>{
-            nameDiv.style.transform = "translate(0px,0px)";
+            document.getElementById("nameStuff").style.transform = "translate(0px,0px)";
         },1);
 
         /*chatForm.onsubmit = function(e) {
@@ -842,44 +867,57 @@
             e.preventDefault();
         }*/
 
-        nameForm.onsubmit = function(e) {
+        nameForm.onsubmit = (e) => {
             if(nameForm.firstElementChild.value != "") {
-                socket.emit("name",nameForm.firstElementChild.value);
+                socket.emit("login",`${nameForm.firstElementChild.value}|${nameForm.children[1].value}`,(data) => {
+                    if(!data) {
+                        let loginText = get("loginText");
+
+                        loginText.style.opacity = 1;
+
+                        setTimeout(()=>{
+                            loginText.style.opacity = 0;
+                        },2000);
+                    }else {
+                        console.log(data.players);
+            
+                        for(let player in data.players) {
+                            let money = data.players[player].split("|")[0];
+                            let bank = data.players[player].split("|")[1];
+                            playersList[player] = data.players[player];
+                            updatePlayersList();
+                            /*document.getElementById("playersList").innerHTML += `<h3 style="margin: 0px;margin-bottom: 5px;">${player}</h3>
+                            <h4 class="smallIcon bag" style="margin: 7px;">$${money}</h4>
+                            <br>
+                            <h4 class="smallIcon bank" style="margin: 7px;">$${bank}</h4>
+                            <div class="line"></div>\n`;*/
+                        }
+                        if(nameForm.firstElementChild.value == data.name) {
+                            document.getElementById("nameStuff").style.transform = "translate(0px,-300px)";
+                            document.getElementById("money").style.setProperty('--money',data.money.split("|")[0]);
+                            document.getElementById("bankMoney").style.setProperty('--bankMoney',data.money.split("|")[1]);
+                            //document.getElementById("money").innerText = "$"+data.money.split("|")[0];
+                            //document.getElementById("bankMoney").innerText = "$"+data.money.split("|")[1];
+                            joined = true;
+                            setTimeout(()=>{
+                                nameDiv.style.display = "none";
+                                main.style.display = "";
+                                //main.style.opacity = 1;
+                            },500);
+                            setTimeout(()=>{
+                                main.style.opacity = "";
+                            },1000);
+                        }
+                    }
+                });
             }
             e.preventDefault();
         };
 
-        socket.on("start",function(data) {
+        /*socket.on("start",function(data) {
             //console.log(data.name + " joined")
-            console.log(data.players);
-            for(let player in data.players) {
-                let money = data.players[player].split("|")[0];
-                let bank = data.players[player].split("|")[1];
-                playersList[player] = data.players[player];
-                updatePlayersList();
-                /*document.getElementById("playersList").innerHTML += `<h3 style="margin: 0px;margin-bottom: 5px;">${player}</h3>
-                <h4 class="smallIcon bag" style="margin: 7px;">$${money}</h4>
-                <br>
-                <h4 class="smallIcon bank" style="margin: 7px;">$${bank}</h4>
-                <div class="line"></div>\n`;*/
-            }
-            if(nameForm.firstElementChild.value == data.name) {
-                nameDiv.style.transform = "translate(0px,-150px)";
-                document.getElementById("money").style.setProperty('--money',data.money.split("|")[0]);
-                document.getElementById("bankMoney").style.setProperty('--bankMoney',data.money.split("|")[1]);
-                //document.getElementById("money").innerText = "$"+data.money.split("|")[0];
-                //document.getElementById("bankMoney").innerText = "$"+data.money.split("|")[1];
-                joined = true;
-                setTimeout(()=>{
-                    nameDiv.style.display = "none";
-                    main.style.display = "";
-                    //main.style.opacity = 1;
-                },500);
-                setTimeout(()=>{
-                    main.style.opacity = "";
-                },1000);
-            }
-        });
+            
+        });*/
 
         socket.on("money",(newMoney)=>{
             //document.getElementById("money").innerText = "$"+newMoney.split("|")[0];
