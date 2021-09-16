@@ -4,7 +4,8 @@ const serv = require('http').Server(app);
 const fs = require("fs");
 //time so you can only do certain things at certain times
 //music queue thinggy
-//banks and faciolity you can buy a building for 500,000 to 20 million and you can buy associats bassically make you money over time and the amount of money you get corrisponds to the higher up the facility  (he 500000 can make 50 dollars assecond and the 20 million could get you 213 thousand dollars and you can upagrade the accsoitats and shit)
+//banks and faciolity you can buy a building for 500,000 to 20 million and you can buy associats bassically make you money over time and the amount of money you get corrisponds to the higher up the facility  (he 500000 can make 50 dollars assecond and the 20 million could get you 213 thousand dollars and you can upagrade the accsoitats    and shit)
+//bababooeys
 
 function print(string) {
     console.log(string);
@@ -27,7 +28,7 @@ app.get("/",function(req,res) {
 app.get("/stuff/img/",function(req,res) {
     //console.log("bruh");
     //console.log(picthurs);
-    let picthurs = fs.readFileSync("stuff/img/picthurs.html").toString();
+    let picthurs = fs.readFileSync(__dirname + "/stuff/img/picthurs.html").toString();
 
     let picthurs2 = picthurs.split("//PUTTHESHITHERE")[1];
     let shit = "let pictures = [";
@@ -457,11 +458,14 @@ function did(msg,socket,person,callback) {
                 return;
             }*/
             //embed.setTitle("Their Inventory")
-            for (let key of items.keys()) {
+            if(callback) {
+                callback(saveData[person.name].inventory);
+            }
+            /*for (let key of items.keys()) {
                 let jsonName = key.split(" ").join("");
 
                 embed.addField(key+"s",saveData[person.name].inventory[jsonName]);
-            }
+            }*/
             /*embed.addField("reverse cards",getReverseCards(person));
                 embed.addField("ghost steals",getGhostSteals(person));
                 embed.addField("money back",getMoneyBack(person));
@@ -472,16 +476,16 @@ function did(msg,socket,person,callback) {
         }else {
             //embed.setTitle("Your Inventory")
             if(callback) {
-                let bruh = "";
-                for (let key of items.keys()) {
+                //let bruh = saveData[sender.name].inventory;
+                /*for (let key of items.keys()) {
                     let jsonName = key.split(" ").join("");
                     //embed.addField(key+"s",saveData[sender.name].inventory[jsonName] ? saveData[sender.name].inventory[jsonName].amount : 0);
                     bruh += `${jsonName}: ${saveData[sender.name].inventory[jsonName]}\n`;
-                }
-                callback(bruh);
-            }else {
-                socket.emit('do','Inventory|Where yo call back nigger&fucking black ass|[Fail]|-NaN dollars');
-            }
+                }*/
+                callback(saveData[sender.name].inventory);
+            }//else {
+            //    socket.emit('do','Inventory|Where yo call back &  ass|[Fail]|-NaN dollars');
+            //}
             
         }
         //message.channel.send(embed);
@@ -1256,11 +1260,19 @@ function did(msg,socket,person,callback) {
     fs.writeFile(__dirname + "/stats.json",JSON.stringify(saveData),(err)=>{
         if(err) console.error(err);
     });
+    
+    let changedShit = {};
+
     if(moneyChanged || lastMoneys[sender.name].split("|")[0] != saveData[sender.name].money || lastMoneys[sender.name].split("|")[1] != saveData[sender.name].bankMoney) {
         socket.emit("money",saveData[sender.name].money+"|"+saveData[sender.name].bankMoney);
+        changedShit[sender.name] = saveData[sender.name].money+"|"+saveData[sender.name].bankMoney;
     }
     if(person && (lastMoneys[person.name].split("|")[0] != saveData[person.name].money || lastMoneys[person.name].split("|")[1] != saveData[person.name].bankMoney)) {
         person.socket.emit("money",saveData[person.name].money+"|"+saveData[person.name].bankMoney);
+        changedShit[person.name] = saveData[person.name].money+"|"+saveData[person.name].bankMoney;
+    }
+    if(Object.keys(changedShit).length != 0) {
+        io.emit("moneyUpdate",changedShit);
     }
 }
 
@@ -1374,13 +1386,13 @@ io.sockets.on('connection',function(socket) {
 });
 
 setInterval(()=>{
-    let payload = {};
+    //let payload = {};
     let i = 0;
     players.forEach(()=>{
         i++;
     });
     //console.log(i);
-    if(i > 0) {
+    if(i != 0) {
         players.forEach((plr)=>{
             //console.log(saveData[plr.name].money + " vs " + lastMoneys[plr.name].split("|")[0]);
             //if(saveData[plr.name].money != lastMoneys[plr.name].split("|")[0]) {
@@ -1391,10 +1403,10 @@ setInterval(()=>{
                 //payload[plr.name] = saveData[plr.name].bankMoney;
             //    lastMoneys[plr.name] = saveData[plr.name].money+"|"+saveData[plr.name].bankMoney;
             //}
-            if(saveData[plr.name].money != lastMoneys[plr.name].split("|")[0] || saveData[plr.name].bankMoney != lastMoneys[plr.name].split("|")[1]) {
+            /*if(saveData[plr.name].money != lastMoneys[plr.name].split("|")[0] || saveData[plr.name].bankMoney != lastMoneys[plr.name].split("|")[1]) {
                 payload[plr.name] = saveData[plr.name].money+"|"+saveData[plr.name].bankMoney;
                 lastMoneys[plr.name] = saveData[plr.name].money+"|"+saveData[plr.name].bankMoney;
-            }
+            }*/
             if(saveData[plr.name].jail) {
                 let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].jail))*-1;
 
@@ -1457,8 +1469,8 @@ setInterval(()=>{
             }
         });
     }
-    if(Object.keys(payload).length != 0) {
-        console.log(payload);
-        io.emit("moneyUpdate",payload);
-    }
+    //if(Object.keys(payload).length != 0) {
+    //    console.log(payload);
+    //    io.emit("moneyUpdate",payload);
+    //}
 },1000);
