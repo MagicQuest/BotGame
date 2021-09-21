@@ -263,7 +263,17 @@
             user-select: none;
             -webkit-user-select: none;
         }
-        .price, money {
+        money {
+            font-weight: bold;
+            color: #6f6;
+            position: relative;
+        }
+        moneyRed {
+            font-weight: bold;
+            color: rgb(255, 102, 102);
+            position: relative;
+        }
+        .price {
             font-weight: bold;
             color: #6f6;
             padding-left: 18px;
@@ -410,9 +420,9 @@
             position: relative;
             /* background: #000; */
             background: rgba(0,0,0,0.25);
-            float: left;
             filter: drop-shadow(0px 3px 2px #000);
             -webkit-filter: drop-shadow(0px 3px 2px #000);
+            background-size: cover;
         }
         .crate:before {
             content: '';
@@ -584,6 +594,9 @@
                 </div>
             </div>
         </div>
+        <div class="crate" id="timercopy" style="background-image: url('stuff/img/jail.png');background-position: center;">
+            <div class="pieTimer" id="copyTimer" style="background-position: 0px 0px;"></div>
+        </div>
     </div>
     <center id="nameStuff">
         <div class="ccDiv vignette" id="nameDiv">
@@ -602,14 +615,15 @@
         </div>
     </center>
     <div id="main" style="opacity: 0; display: none;">
-        <center>
+        <center id="moneyCenter">
             <!--img src="stuff/img/monybag.png" class="icon"-->
             <h1 id="money" class="money">$</h1>
             <div style="margin: 15px;">
 
             </div>
             <!--img src="stuff/img/bank.png" class="icon"-->
-            <h1 id="bankMoney" class="money">$</h1>
+            <h1 id="bankMoney" class="money">$</h1> <br>
+            
         </center>
         <div id="tempButtons" style="width: 415px;display: inline-block">
             <button class="tempButton" onclick="socket.emit('do','hack 1')">
@@ -621,7 +635,7 @@
             <button class="tempButton" onclick="socket.emit('do','beg')">
                 beg
             </button>
-            <button class="tempButton" onclick="socket.emit('do','gamble all');/*createEmbed('Gambling','How much money do you want to gamble','Custom').addButton('All',()=>{console.log('nigger')}).addButton('Half',()=>{console.log('galfd')}).addButton('Random',()=>{console.log('rando')}).addButton('Custom amoyunt',()=>{console.log('cusotm')}).finish()*/">
+            <button class="tempButton" onclick="socket.emit('do','gamble all');/*createEmbed('Gambling','How much money do you want to gamble','Custom').addButton('All',()=>{console.log('bababooey')}).addButton('Half',()=>{console.log('galfd')}).addButton('Random',()=>{console.log('rando')}).addButton('Custom amoyunt',()=>{console.log('cusotm')}).finish()*/">
                 Gamble All
             </button>
             <button class="tempButton" onclick="socket.emit('do','gamble half');">
@@ -660,6 +674,22 @@
             <button class="tempButton" onclick="socket.emit('do','buy money multiply');">
                 buy money mutlipler
             </button>
+            
+            <button class="tempButton" onclick="socket.emit('do','use reverse card');">
+                use reverse crad
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','use ghost steal');">
+                use ghost stel
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','use bank breaker');">
+                use bank nigger
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','use money back');">
+                use money bank
+            </button>
+            <!--button class="tempButton" onclick="socket.emit('do','use money multiply');">
+                use money mutlipler
+            </button-->
             <button class="tempButton" onclick="socket.emit('do','auto');">
                 auto mode
             </button>
@@ -680,9 +710,6 @@
             <!--div class="crate" style="background-image: url('stuff/img/reversecard.png');background-position: center;" onclick="socket.emit('do','buy reverse card')" onmouseover="" onmousemove="">
 
             </div-->
-            <div class="crate" style="background-image: url('stuff/img/jail.png');background-position: center;" onclick="crateClick(this);">
-                <div class="pieTimer" id="jailTimer" style="background-position: 0px 0px;"></div>
-            </div>
         </div>
         <!--img class="crate" src="stuff/img/border.png" style="cursor: pointer;background-image: url('stuff/img/shop.png');background-position: center;position:absolute;top:10px;left:10px;" onmouseout="let le = document.getElementById('tooltipAnchor'); le.style.display = 'none';" onmousemove="let le = document.getElementById('tooltipAnchor'); le.style.display = 'block'; le.style.inset = `${event.clientY}px auto auto ${event.clientX}px`;"-->
         <div id="notes">
@@ -752,13 +779,15 @@
         
         var playersList = {};
 
+        var timers = {};// = {jail: {startTime: 0, endTime: 0},ghostSteal: {startTime: 0, endTime: 0},bankBreaker: {startTime: 0, endTime: 0}} bruh what am i doing lets just make this automatic;
+        
         //var joined = false;
 
         function updatePlayersList() {
-            console.log(playersList);
+            //console.log(playersList);
             document.getElementById("playersList").innerHTML = "";
             for(let player in playersList) {
-                console.log(playersList[player]);
+                //console.log(playersList[player]);
                 let money = playersList[player].split("|")[0];
                 let bank = playersList[player].split("|")[1];
                 document.getElementById("playersList").innerHTML += `<h3 style="margin: 0px;margin-bottom: 5px;"><a onclick="nameClick(event)">${player}</a></h3>
@@ -844,7 +873,7 @@
                     button.remove();
                 }};
             }
-            console.log(content);
+            //console.log(content);
             embeds.appendChild(leEmbed);
             if(modal) {
                 //overlay.setAttribute("onmousedowne",overlay.onmousedown);
@@ -852,6 +881,31 @@
             }
             overlay.style.display = "";
             overlay.style.backgroundColor = "rgba(0,0,0,.25)";
+        }
+        function createNote(name, desc, tag, status, money) {
+            let leNote = document.createElement("div");//document.getElementById("notecopy").innerHTML
+            leNote.className = "framed tooltip";
+            leNote.style.inset = "auto";
+            leNote.innerHTML = document.getElementById("notecopy").innerHTML;
+            leNote.firstElementChild.children[3].innerHTML = name;
+            if(tag) {
+                leNote.firstElementChild.lastElementChild.innerHTML = desc+`<p>${tag}</p>`;
+            }else {
+                if(random(0,25) == 0) {
+                    leNote.firstElementChild.lastElementChild.innerHTML = desc+"<p>You earned this one, champ</p>";
+                }else {
+                    leNote.firstElementChild.lastElementChild.innerHTML = desc;
+                }
+            }
+            if(status == "[Fail]") {
+                leNote.firstElementChild.children[2].firstElementChild.style.color = "#f66";
+            }
+            leNote.firstElementChild.children[4].innerHTML = status;
+            leNote.firstElementChild.children[2].firstElementChild.innerHTML = money;
+            if(!notes.innerHTML.includes(`<div class="framed closeFrame" onclick="document.getElementById('notes').innerHTML = '';">x</div>`)) {
+                notes.innerHTML += `<div class="framed closeFrame" onclick="document.getElementById('notes').innerHTML = '';">x</div>`;
+            }
+            notes.appendChild(leNote);
         }
 
         function crateClick(crate) {
@@ -862,17 +916,74 @@
             }
         }
         
-        /*function tick() {
-            if(chatDragging) {
-                chat.style.width = +px;
+        function tick() {
+            //bro this sucked and without ac this didn't get any better
+            //haha i was thinking why didn't they write comments but then i realized 1: i don't write comments either and 2: they probably didn't think people were gonna steal from them
+            for(let timerName in timers) {
+                let timer = timers[timerName];
+                //console.log(timer.started);
+                if(!timer.started) {
+                    timer.started = true;
+                    timer.time *= 30;
+                    timer.maxTime = timer.time;
+                    //console.log(timer);
+                }
+                //console.log(timer,timers[timerName]);
+                //let seconds = timers[timerName].endTime - Math.trunc(new Date().getTime()/1000);//timers.jail.startTime;
+                if(timer.time <= 0) {
+                    document.getElementById(timerName + "Timer").parentElement.remove();
+                    //eval(`${timerName}Timer.parentElement.remove();`);
+                    delete timers[timerName];
+                    //return;
+                }else {
+                    let T=1-(timer.time/timer.maxTime);
+                    ///////console.log(timer.time,timer.maxTime,T);
+					T=(T*144)%144;
+                    ///////console.log(T,(-Math.floor(T%18))*48+'px '+(-Math.floor(T/18))*48+'px');
+                    document.getElementById(timerName + "Timer").style.backgroundPosition = (-Math.floor(T%18))*48+'px '+(-Math.floor(T/18))*48+'px';
+					//eval(`${timerName}Timer.style.backgroundPosition="${(-Math.floor(T%18))*48+'px '+(-Math.floor(T/18))*48+'px'}"`);
+                    //console.log(timer);
+                    timer.time = (timer.endTime - Math.trunc(new Date().getTime()/1000))*30; 
+                    //timer.time--;
+                }
+                //let time = seconds;
+                //console.log(time);
+                //return;
+                //alright bruh i give up im gonna try to look at cookie clicker but theirs doesn't make much sense at all
+                //var T=1-(buff.time/buff.maxTime);
+				//	T=(T*144)%144;
+				//	l('buffPieTimer'+buff.id).style.backgroundPosition=(-Math.floor(T%18))*48+'px '+(-Math.floor(T/18))*48+'px';
+                //if(time % 18 == 0) {
+                   // timers[timerName].x = timers[timerName].x ? timers[timerName].x : 1;
+                    //timers[timerName].y = timers[timerName].y ? timers[timerName].y : 1;
+                    //timers[timerName].x += 1/*time/18*/;
+                    //if(timers[timerName].x > 18) {
+                    //    timers[timerName].y += 1;
+                    //    timers[timerName].x = 1;
+                    //}
+                //}
+                //if(time % 8 == 0) {
+                    //timers[timerName].y = time/8; 
+                //}
+                //console.log(time,timers[timerName].x,timers[timerName].y);
+                //eval(`${timerName}Timer.style.backgroundPositionX = "${-timers[timerName].x*48}px";
+                //      ${timerName}Timer.style.backgroundPositionY = "${-timers[timerName].y*48}px";`);
+                //console.log(time % 8 == 0,time % 18 == 0);
+                //BRO WHA TTHE FUCK I JUST USED THIS CODE BY ACCIDENT AND IT WORKED AND SUDDENLY THERE HAS BEEN A FEATURE WHERE OBJECTS WITH THE ID THING ARE AUTOMATICALLY STORED AS A VARIABLE WHAT THE FUCK
+                //jailTimer.style.backgroundPositionY = jailTimer.style.backgroundPositionX.includes("816") ? parseInt(jailTimer.style.backgroundPositionY) - 48 + "px" : jailTimer.style.backgroundPositionY;
+                //jailTimer.style.backgroundPositionX = jailTimer.style.backgroundPositionX.includes("816") ? "0px" : parseInt(jailTimer.style.backgroundPositionX) - 48 + "px";
             }
+            /*if(chatDragging) {
+                chat.style.width = +px;
+            }*/
 
-            requestAnimationFrame(tick);
+            setTimeout(tick,1000/30);
+            //requestAnimationFrame(tick);
         }
+        tick();
+        //requestAnimationFrame(tick);
 
-        requestAnimationFrame(tick);*/
-
-        let shit = setInterval(()=>{
+        /*let shit = setInterval(()=>{
             let jailTimer = document.getElementById("jailTimer");
             if(jailTimer.style.backgroundPositionX == "-816px" && jailTimer.style.backgroundPositionY == "-336px") {
                 jailTimer.parentElement.remove();
@@ -880,7 +991,7 @@
             }
             jailTimer.style.backgroundPositionY = jailTimer.style.backgroundPositionX.includes("816") ? parseInt(jailTimer.style.backgroundPositionY) - 48 + "px" : jailTimer.style.backgroundPositionY;
             jailTimer.style.backgroundPositionX = jailTimer.style.backgroundPositionX.includes("816") ? "0px" : parseInt(jailTimer.style.backgroundPositionX) - 48 + "px";
-        },100);
+        },100);*/
 
         document.addEventListener("mousemove",(event)=>{
             mouse.x = event.clientX;
@@ -934,7 +1045,7 @@
             if(nameForm.firstElementChild.value != "") {
                 socket.emit("login",`${nameForm.firstElementChild.value}|${nameForm.children[1].value}`,(data) => {
                     if(!data) {
-                        let loginText = get("loginText");
+                        //let loginText = get("loginText");
 
                         loginText.style.opacity = 1;
 
@@ -942,7 +1053,7 @@
                             loginText.style.opacity = 0;
                         },2000);
                     }else {
-                        console.log(data.players);
+                        //console.log(data.players);
             
                         for(let player in data.players) {
                             let money = data.players[player].split("|")[0];
@@ -976,44 +1087,49 @@
             }
             e.preventDefault();
         };
-
+        
         /*socket.on("start",function(data) {
             //console.log(data.name + " joined")
             
         });*/
-
+        
         socket.on("money",(newMoney)=>{
             //document.getElementById("money").innerText = "$"+newMoney.split("|")[0];
             //document.getElementById("bankMoney").innerText = "$"+newMoney.split("|")[1];
             document.getElementById("money").style.setProperty('--money',newMoney.split("|")[0]);
             document.getElementById("bankMoney").style.setProperty('--bankMoney',newMoney.split("|")[1]);
         });
-
+        
         socket.on("do",(info)=>{
-            console.log(info);
-            let leNote = document.createElement("div");//document.getElementById("notecopy").innerHTML
-            leNote.className = "framed tooltip";
-            leNote.style.inset = "auto";
-            leNote.innerHTML = document.getElementById("notecopy").innerHTML;
-            leNote.firstElementChild.children[3].innerHTML = info.split("|")[0];
-            if(info.split("|")[1].includes("&")) {
-                leNote.firstElementChild.lastElementChild.innerHTML = info.split("|")[1].split("&")[0]+`<p>${info.split("|")[1].split("&")[1]}</p>`;
-            }else {
-                if(random(0,25) == 0) {
-                    leNote.firstElementChild.lastElementChild.innerHTML = info.split("|")[1]+"<p>You earned this one, champ</p>";
-                }else {
-                    leNote.firstElementChild.lastElementChild.innerHTML = info.split("|")[1];
+            //console.log(info);
+            let hasTag = info.split("|")[1].includes("&");
+            createNote(info.split("|")[0],hasTag ? info.split("|")[1].split("&")[0] : info.split("|")[1],!hasTag ? undefined : info.split("|")[1].split("&")[1],info.split("|")[2],info.split("|")[3]);
+        });
+        
+        socket.on("timer",(timeInfo)=>{
+                let timerName = timeInfo.n;
+                let time = timeInfo.t;
+                if(timeInfo.info) {
+                    let hasTag = timeInfo.info.split("|")[1].includes("&");
+                    createNote(timeInfo.info.split("|")[0],hasTag ? timeInfo.info.split("|")[1].split("&")[0] : timeInfo.info.split("|")[1],!hasTag ? undefined : timeInfo.info.split("|")[1].split("&")[1],timeInfo.info.split("|")[2],timeInfo.info.split("|")[3]);
                 }
-            }
-            if(info.split("|")[2] == "[Fail]") {
-                leNote.firstElementChild.children[2].firstElementChild.style.color = "#f66";
-            }
-            leNote.firstElementChild.children[4].innerHTML = info.split("|")[2];
-            leNote.firstElementChild.children[2].firstElementChild.innerHTML = info.split("|")[3];
-            if(!notes.innerHTML.includes(`<div class="framed closeFrame" onclick="document.getElementById('notes').innerHTML = '';">x</div>`)) {
-                notes.innerHTML += `<div class="framed closeFrame" onclick="document.getElementById('notes').innerHTML = '';">x</div>`;
-            }
-            notes.appendChild(leNote);
+                if(timeInfo.e) {
+                    createEmbed(timeInfo.e.split("|")[0],timeInfo.e.split("|")[1],timeInfo.e.split("|")[2]);
+                }
+                if(document.getElementById(timerName + "Timer")) {
+                    timers[timerName].maxTime += time;
+                    timers[timerName].time += time;
+                    return;
+                }
+                //console.log(timeInfo);
+                let timerParent = document.createElement("div");
+                timerParent.className = "crate";
+                timerParent.style.backgroundImage = `url('stuff/img/${timerName}.png')`;
+                timerParent.style.backgroundPosition = 'center';
+                timerParent.innerHTML = timercopy.innerHTML.replace("copy",timerName);
+                moneyCenter.appendChild(timerParent);
+                timers[timerName] = {time: time,endTime: timeInfo.st+timeInfo.t};
+                //console.log(timers);
         });
 
         socket.on("embed",(info)=>{
@@ -1055,7 +1171,7 @@
         });
 
         socket.on("joined",(info)=>{
-            console.log(info);
+            //console.log(info);
             let name = info.split("|")[0];
             let money = info.split("|")[1];
             let bank = info.split("|")[2];
@@ -1137,7 +1253,7 @@
             updatePlayersList();
         });
         socket.on("moneyUpdate",(info)=>{
-            console.log(info);
+            //console.log(info);
             /*for(let name in info) {
                 document.getElementById("playersList").innerHTML.split(`<div class="line"></div>`).forEach((e,i)=>{
                     //console.log(info+"info");
@@ -1152,7 +1268,7 @@
                 updatePlayersList();
             }
         });
-        socket.on("disconnect",()=>{document.location.reload()})
+        socket.on("disconnect",()=>{document.location.reload()});
         /*socket.on("items",(items)=>{
             console.log(items);
         });*/
