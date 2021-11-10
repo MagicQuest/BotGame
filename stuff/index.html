@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta property="og:title" content="bot game" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://magicquest.github.io/games/botgame.html" />
-    <meta property="og:image" content="stuff/img/monybag.png" />
-    <meta property="og:description" content="funny bot game" />
+    <meta property="og:title" content="bot game"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://magicquest.github.io/games/botgame.html"/>
+    <meta property="og:image" content="stuff/img/monybag.png"/>
+    <meta property="og:description" content="funny bot game"/>
     <!--meta name="theme-color" content="#FF0000"-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bot game</title>
-    <meta property="og:description" content="one of my multiplayer games" />
+    <meta property="og:description" content="one of my multiplayer games"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js">
 
     </script>
@@ -376,7 +376,7 @@
             border-radius: 2px;
             display: inline-block;
             margin: 2px 4px 2px 0px;
-            color: #ccc;
+            color: #fff;
             font-size: 12px;
             padding: 4px 8px;
             text-decoration: none;
@@ -385,8 +385,9 @@
         a, a:visited {
             text-decoration: underline;
             cursor: pointer;
-            color: #ccc;
+            color: #fff;
         }
+        
         .ccButton {
             text-align: center;
             clear: both;
@@ -396,7 +397,7 @@
             border-radius: 2px;
             display: inline-block;
             margin: 2px 4px 2px 0px;
-            color: #ccc;
+            color: #fff;
             font-size: 12px;
             padding: 4px 8px;
             text-decoration: none;
@@ -464,7 +465,7 @@
             font-family: Comic Sans MS;
             padding: 1px 8px 7px 8px;
             z-index: 4;
-            color: #ccc;
+            color: #fff;
         }
 
         .pieTimer {
@@ -527,6 +528,20 @@
             background-size: cover;
             margin-bottom: 15px;
         }
+
+        a.option.disabled {
+            cursor: not-allowed;
+            color: #bbb;
+            border: 1px solid #e2dd48;
+            border-color: #ece2b6 #875526 #733726 #dfbc9a;
+        }
+        a.option.disabled:hover {
+            color: #bbb;
+        }
+        a.option.disabled:active {
+            color: #bbb;
+        }
+
         /*div.shopImg {
             --number: 0;
         }
@@ -666,7 +681,7 @@
                 buy ghost stel
             </button>
             <button class="tempButton" onclick="socket.emit('do','buy bank breaker');">
-                buy bank nigger
+                buy bank brkar
             </button>
             <button class="tempButton" onclick="socket.emit('do','buy money back');">
                 buy money bank
@@ -682,10 +697,16 @@
                 use ghost stel
             </button>
             <button class="tempButton" onclick="socket.emit('do','use bank breaker');">
-                use bank nigger
+                use bank braker
             </button>
             <button class="tempButton" onclick="socket.emit('do','use money back');">
                 use money bank
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','work youtuber');">
+                work youtuber
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','work mcdonalds');">
+                work mcdonalds
             </button>
             <!--button class="tempButton" onclick="socket.emit('do','use money multiply');">
                 use money mutlipler
@@ -695,8 +716,17 @@
             </button>
         </div>
         <div style="position: absolute;top:10px;right:10px;transition: .5s top;text-align: center;overflow-y: hidden;">
-            <div id="playersList" class="framed" style="width: 250px;height: 200px;overflow-y: scroll;">
-                
+            <div id="playersListContainer" class="framed" style="width: 266px;height: 208px;padding: 0;overflow-y: scroll;">
+                <div id="playersList"></div>
+                <!--perhaps animate a little bar that shows -->
+                <div id="sortOptions" style="position: absolute; background: rgba(0,0,0,0.25); bottom: 20%; height: 10%; width: 95%;">
+                    <div class="crate" style="background-image: url('stuff/img/monybag.png');background-position: center;transform: scale(0.5);top: -15px;left:-15px;position:absolute;" onclick="sort('mony');">
+
+                    </div>
+                    <div class="crate" style="background-image: url('stuff/img/bank.png');background-position: center;transform: scale(0.5);top: -15px;right:-15px;position:absolute;" onclick="sort('bank');">
+
+                    </div>
+                </div>
             </div>
             <a class="ccButton" style="font-size:25px;text-align: center;width:254px;margin-left:4px;" onclick="this.parentElement.style.top = this.parentElement.style.top == '10px' ? '-220px' : '10px'">Players</a>
         </div>
@@ -778,24 +808,80 @@
         var overContext;
         
         var playersList = {};
+        //ok soon im gonna make it so that i store al the player's information 
+        var you = {};
 
         var timers = {};// = {jail: {startTime: 0, endTime: 0},ghostSteal: {startTime: 0, endTime: 0},bankBreaker: {startTime: 0, endTime: 0}} bruh what am i doing lets just make this automatic;
         
+        var sorting = "mony";
+        
         //var joined = false;
+
+        function sort(type) {
+            sorting = type;
+            updatePlayersList();
+        }
 
         function updatePlayersList() {
             //console.log(playersList);
             document.getElementById("playersList").innerHTML = "";
-            for(let player in playersList) {
+            if(sorting == "mony") {
+                let monyes = [];
+                for (let person in playersList) {
+                    playersList[person].checked = false;
+                    monyes.push(playersList[person].money);
+                    //console.log(`${property}: ${object[property]}`);
+                }
+                monyes.sort((a,b)=>b-a);
+                monyes.forEach(mony => {
+                    for(let person in playersList) {
+                        if(!playersList[person].checked && playersList[person].money == mony) {
+                            playersList[person].checked = true;
+                            
+                            let money = playersList[person].money;//split("|")[0];
+                            let bank = playersList[person].bankMoney;//split("|")[1];
+                            document.getElementById("playersList").innerHTML += `<h3 style="margin: 0px;margin-bottom: 5px;"><a onclick="nameClick(event)">${person}</a></h3>
+                            <h4 class="smallIcon bag" style="margin: 7px;">$${money}</h4>
+                            <br>
+                            <h4 class="smallIcon bank" style="margin: 7px;">$${bank}</h4>
+                            <div class="line"></div>\n`;
+                        }
+                    }
+                });
+            }else {
+                let banky = [];
+                for (let person in playersList) {
+                    playersList[person].checked = false;
+                    banky.push(playersList[person].bankMoney);
+                    //console.log(`${property}: ${object[property]}`);
+                }
+                banky.sort((a,b)=>b-a);
+                banky.forEach(bank => {
+                    for(let person in playersList) {
+                        if(!playersList[person].checked && playersList[person].bankMoney == bank) {
+                            playersList[person].checked = true;
+                            
+                            let money = playersList[person].money;//split("|")[0];
+                            let bank = playersList[person].bankMoney;//split("|")[1];
+                            document.getElementById("playersList").innerHTML += `<h3 style="margin: 0px;margin-bottom: 5px;"><a onclick="nameClick(event)">${person}</a></h3>
+                            <h4 class="smallIcon bag" style="margin: 7px;">$${money}</h4>
+                            <br>
+                            <h4 class="smallIcon bank" style="margin: 7px;">$${bank}</h4>
+                            <div class="line"></div>\n`;
+                        }
+                    }
+                });
+            }
+            /*for(let player in playersList) {
                 //console.log(playersList[player]);
-                let money = playersList[player].split("|")[0];
-                let bank = playersList[player].split("|")[1];
+                let money = playersList[player].money;//split("|")[0];
+                let bank = playersList[player].bankMoney;//split("|")[1];
                 document.getElementById("playersList").innerHTML += `<h3 style="margin: 0px;margin-bottom: 5px;"><a onclick="nameClick(event)">${player}</a></h3>
                 <h4 class="smallIcon bag" style="margin: 7px;">$${money}</h4>
                 <br>
                 <h4 class="smallIcon bank" style="margin: 7px;">$${bank}</h4>
                 <div class="line"></div>\n`;
-            }
+            }*/
         }
 
         function clear() {
@@ -913,6 +999,33 @@
             console.log(crate,name);
             if(name.includes("shop")) {
                 createEmbed("Shop","item","YesNo");//.addButton("");
+            }
+        }
+
+        function setMoney(newMoney,newBankMoney) {
+            newMoney = Number(newMoney);
+            newBankMoney = Number(newBankMoney);
+
+            //document.getElementById("money").innerText = "$"+newMoney.split("|")[0];
+            //document.getElementById("bankMoney").innerText = "$"+newMoney.split("|")[1];
+            
+            you.money = newMoney;
+            you.bankMoney = newBankMoney;
+            if(newMoney < 2147483647) {
+                money.innerText = "$";
+                money.style.setProperty('--mshow',"inline");
+                money.style.setProperty('--money',newMoney);
+            }else {
+                money.style.setProperty('--mshow',"none");
+                money.innerText = "$"+newMoney
+            }
+            if(newBankMoney < 2147483647) {
+                bankMoney.innerText = "$";
+                bankMoney.style.setProperty('--bmshow',"inline");
+                bankMoney.style.setProperty('--bankMoney',newBankMoney);
+            }else {
+                bankMoney.style.setProperty('--bmshow',"none");
+                bankMoney.innerText = "$"+newBankMoney
             }
         }
         
@@ -1058,7 +1171,7 @@
                         for(let player in data.players) {
                             let money = data.players[player].split("|")[0];
                             let bank = data.players[player].split("|")[1];
-                            playersList[player] = data.players[player];
+                            playersList[player] = {money: money, bankMoney: bank};
                             updatePlayersList();
                             /*document.getElementById("playersList").innerHTML += `<h3 style="margin: 0px;margin-bottom: 5px;">${player}</h3>
                             <h4 class="smallIcon bag" style="margin: 7px;">$${money}</h4>
@@ -1068,10 +1181,12 @@
                         }
                         if(nameForm.firstElementChild.value == data.name) {
                             document.getElementById("nameStuff").style.transform = "translate(0px,-300px)";
-                            document.getElementById("money").style.setProperty('--money',data.money.split("|")[0]);
-                            document.getElementById("bankMoney").style.setProperty('--bankMoney',data.money.split("|")[1]);
+                            //document.getElementById("money").style.setProperty('--money',data.money.split("|")[0]);
+                            //document.getElementById("bankMoney").style.setProperty('--bankMoney',data.money.split("|")[1]);
+                            setMoney(data.money.split("|")[0],data.money.split("|")[1]);
                             //document.getElementById("money").innerText = "$"+data.money.split("|")[0];
                             //document.getElementById("bankMoney").innerText = "$"+data.money.split("|")[1];
+                            you.name = data.name;
                             joined = true;
                             setTimeout(()=>{
                                 nameDiv.style.display = "none";
@@ -1094,10 +1209,7 @@
         });*/
         
         socket.on("money",(newMoney)=>{
-            //document.getElementById("money").innerText = "$"+newMoney.split("|")[0];
-            //document.getElementById("bankMoney").innerText = "$"+newMoney.split("|")[1];
-            document.getElementById("money").style.setProperty('--money',newMoney.split("|")[0]);
-            document.getElementById("bankMoney").style.setProperty('--bankMoney',newMoney.split("|")[1]);
+            setMoney(newMoney.split("|")[0],newMoney.split("|")[1]);
         });
         
         socket.on("do",(info)=>{
@@ -1175,8 +1287,8 @@
             let name = info.split("|")[0];
             let money = info.split("|")[1];
             let bank = info.split("|")[2];
-            chat.innerHTML += `<a onclick="nameClick(event)">${name}</a> just joined<div class='line'></div>`;
-            playersList[name] = info.slice(info.indexOf("|")+1);
+            chat.innerHTML += `<div><a onclick="nameClick(event)">${name}</a> just joined<div class='line'></div></div>`;
+            playersList[name] = {money: money, bankMoney: bank}//info.slice(info.indexOf("|")+1);
             updatePlayersList();
             /*document.getElementById("playersList").innerHTML += `<h3 style="margin: 0px;margin-bottom: 5px;">${name}</h3>
             <h4 class="smallIcon bag" style="margin: 7px;">$${money}</h4>
@@ -1186,14 +1298,15 @@
         });
 
         //socket.on('reset',)
-
         function nameClick(event/*,bruh*/) {
             let element = event.target;
-            socket.emit("do","money|"+element.innerHTML,(money)=>{
+            //socket.emit("do","money|"+element.innerHTML,(money)=>{
                 document.getElementById("nameAnchor").innerHTML = "";
                 let leEmbed = document.createElement("div");
-                let bank = money.split("|")[1];
-                money = money.split("|")[0];
+                let player = playersList[element.innerHTML];
+                console.log(player);
+                let bank = player.bankMoney; //money.split("|")[1];
+                let money = player.money; //money.split("|")[0];
                 //leEmbed.onmouseover = ()=>{
                 //    document.getElementById("nameAnchor").innerHTML = "";
                 //};
@@ -1205,6 +1318,16 @@
                 leEmbed.firstElementChild.firstElementChild.innerHTML = element.innerHTML;
                 leEmbed.firstElementChild.children[2].innerHTML = `$${money}`;
                 leEmbed.firstElementChild.children[4].innerHTML = `$${bank}`;
+                
+                let buttons = leEmbed.firstElementChild.children[6];
+                if(you.money == 0) {
+                    buttons.firstElementChild.className += " disabled";
+                    buttons.firstElementChild.onclick = null;
+                }
+                if(money == 0) {
+                    buttons.children[1].className += " disabled";
+                    buttons.children[1].onclick = null;
+                }
                 //leEmbed.firstElementChild.children[6].children[3].onclick = (event)=>{
                 //    socket.emit("do","sex|"+event.target.parentElement.parentElement.firstElementChild.innerHTML);
                 //};
@@ -1216,7 +1339,7 @@
                 //overlay.onclick = ()=>{
                 //    clear();
                 //}
-            });
+            //});
         }
         /*socket.on("playerStatus",(status)=>{
             let left = status.split("|")[0] == 'left';
@@ -1230,14 +1353,14 @@
             }
         });*/
         socket.on("left",(bry)=>{
-            chat.innerHTML += bry + " just left" + "<div class='line'></div>";
+            chat.innerHTML += "<div>" + bry + " just left" + "<div class='line'></div></div>";
             /*let bruh = [];
             document.getElementById("playersList").innerHTML.split(`<div class="line"></div>`).forEach((info,i)=>{
                 //console.log(info+"info");
                 if(info.slice(info.indexOf('<h3 style="margin: 0px;margin-bottom: 5px;">')+44,info.indexOf("</h3>")) != bry) {
                     bruh[i] = info;
                 }
-                //console.log(info.slice(info.indexOf('<h3 style="margin: 0px;margin-bottom: 5px;">')+44,info.indexOf("</h3>")));//+"NIGGERNIGGERNIGGNIERG");
+                //console.log(info.slice(info.indexOf('<h3 style="margin: 0px;margin-bottom: 5px;">')+44,info.indexOf("</h3>")));//+"NWORD");
             });
             bruh.forEach((bru,i)=>{
                 if(bru == "\n") {
@@ -1252,7 +1375,7 @@
             delete playersList[bry];
             updatePlayersList();
         });
-        socket.on("moneyUpdate",(info)=>{
+        socket.on("moneyUpdate",(info) => {
             //console.log(info);
             /*for(let name in info) {
                 document.getElementById("playersList").innerHTML.split(`<div class="line"></div>`).forEach((e,i)=>{
@@ -1260,7 +1383,7 @@
                     if(e.slice(e.indexOf('<h3 style="margin: 0px;margin-bottom: 5px;">')+44,e.indexOf("</h3>")) != name) {
                         bruh[i] = info;
                     }
-                    //console.log(info.slice(info.indexOf('<h3 style="margin: 0px;margin-bottom: 5px;">')+44,info.indexOf("</h3>")));//+"NIGGERNIGGERNIGGNIERG");
+                    //console.log(info.slice(info.indexOf('<h3 style="margin: 0px;margin-bottom: 5px;">')+44,info.indexOf("</h3>")));//+"NWORD");
                 });
             }*/
             for(let name in info) {
@@ -1280,12 +1403,19 @@
         initial-value: 0;
         inherits: false;
     }
+    @property --mshow {
+        syntax: "<string>";
+        initial-value: "inline";
+        inherits: false;
+    }
+    
     #money {
         transition: --money 1s ease;
         counter-set: money var(--money);
     }
     #money::after {
         content: counter(money);
+        display: var(--mshow);
     }
 
     @property --bankMoney {
@@ -1293,13 +1423,24 @@
         initial-value: 0;
         inherits: false;
     }
+
+    @property --bmshow {
+        syntax: "<string>";
+        initial-value: "inline";
+        inherits: false;
+    }
+
     #bankMoney {
         transition: --bankMoney 1s ease;
         counter-set: bankMoney var(--bankMoney);
     }
     #bankMoney::after {
         content: counter(bankMoney);
+        display: var(--bmshow);
     }
+
+    
+    
     /*visual studio code doesn't recognize @property and syntax highlighting completely breaks*/
 </style>
 </html>

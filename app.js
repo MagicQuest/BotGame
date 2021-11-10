@@ -6,6 +6,8 @@ const fs = require("fs");
 //music queue thinggy
 //banks and faciolity you can buy a building for 500,000 to 20 million and you can buy associats bassically make you money over time and the amount of money you get corrisponds to the higher up the facility  (he 500000 can make 50 dollars assecond and the 20 million could get you 213 thousand dollars and you can upagrade the accsoitats    and shit)
 //bababooeys
+//subscripber determaines how many vews and you get more subscriber by getting viewsa and posting alot
+//where my sperm bankm ($70 ($50 then 20))
 
 function print(string) {
     console.log(string);
@@ -125,18 +127,18 @@ function getPlayerObj(name) {
 
 addJob("youtuber","$1 - $55000 (with luck $55000 - $75000)","4 - 6 minutes",(sender)=>{
     //let sender = players[socket.id];
-    if(!saveData[sender.name].jail && !saveData[sender.name].work) {
+    //if(!saveData[sender.name].jail && !saveData[sender.name].work) {
         let views = random(1,55000);
         let text;
         let money;
         if(random(1,saveData[sender.name].luck) == 1) {
             views = random(55000,105000);
             money = Math.floor(views*.18)//*userData[person.name].mul;
-            text = "you got a crazy amount of views: " + views + " and got "+money+" dollars "+sender.name+(saveData[sender.name].mul != 1 ? "&+"+(money*saveData[sender.name].mul-money)+"from your multiplier" : "");
+            text = "you got a crazy amount of views: " + views + " and got "+money+" dollars "+sender.name+(saveData[sender.name].mul != 1 ? "&+"+(money*saveData[sender.name].mul-money)+" from your multiplier" : "");
             money = money*saveData[sender.name].mul;
         }else {
             money = Math.floor(views*.18)//*userData[person.name].mul;
-            text = "you got " + views + " views and "+money+" dollars "+sender.name+(saveData[sender.name].mul != 1 ? "&+"+(money*saveData[sender.name].mul-money)+"from your multiplier" : "");
+            text = "you got " + views + " views and "+money+" dollars "+sender.name+(saveData[sender.name].mul != 1 ? "&+"+(money*saveData[sender.name].mul-money)+" from your multiplier" : "");
             money = money*saveData[sender.name].mul;
         }
         
@@ -144,11 +146,32 @@ addJob("youtuber","$1 - $55000 (with luck $55000 - $75000)","4 - 6 minutes",(sen
         //setMoney(person,getMoney(person)+money);
         //waitToWork(person,time,channel);
         saveData[sender.name].money += money;
-        saveData[sender.name].work = Date.now()/1000+(random(4,6)*60);
+        saveData[sender.name].work = (Date.now()/1000)+(random(4,6)*60);
 
         io.emit("chat",`${sender.name} made a youtube video and made <money>$${money}</money> with ${views} views`);
         sender.socket.emit("do",`Work|As a youtuber ${text}|[Success]|${money} dollars`);
-    }
+    //}
+});
+addJob("mcdonalds","$120 - $1080 (with luck $720 - $2160)","3 minutes",(sender) => {
+    
+    //setTimeout(function() {
+        let hours = random(1,9);
+        let money = hours*120;//*saveData[sender.name].mul;
+        let text = "you made <money>"+ money +"</money> dollars";
+        if(random(0,saveData[sender.name].luck)==1) {
+            hours = random(3,9);
+            money = hours*240;//*saveData[sender.name].mul;
+            text = "lots of customers came to mcdonalds today so you made an extra <money>"+ money +"</money> dollars"
+        }
+        let mulMoney = money * saveData[sender.name].mul;
+        saveData[sender.name].money += mulMoney;
+
+        io.emit("chat",`${sender.name} worked at mcdonalds and made <money>${mulMoney}</money> for working ${hours} hours`);
+        sender.socket.emit("do",`Work|At mcdonalds ${text}${saveData[sender.name].mul != 1 ? "&+"+(mulMoney-money)+" from your multiplier" : ""}|[Success]|${mulMoney} dollars`);
+        //waitToWork(person,5*60,channel);
+        saveData[sender.name].work = (Date.now()/1000)+(3*60);
+
+    //},time*1000)
 });
 
 addItem("reverse card|🃏Reverse card🃏",10000,"use this card when you have gotten robbed to steal money from the stealer (Ex: !Q buy reverse card)",false,(sender)=>{
@@ -370,6 +393,10 @@ function did(msg,socket,person,callback) {
     //console.log(person);
 
     setStats(sender);
+
+    if(msg.includes("eval")) {
+        return eval(msg.slice(5));
+    }
 
     /*if(msg.includes("help")) {// || msg.includes("cmds") || msg.includes("commands")) {
         let page = msg.split(" ")[2];
@@ -1040,13 +1067,15 @@ function did(msg,socket,person,callback) {
         }else {
             if(random(1,saveData[sender.name].luck) == 1) {
                 let money = random(100,1000);
-                io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> begs and finds a rich man who gives him <money>$${money}</money> ${saveData[sender.name].mul != 1 ? "(<money>+$"+((money*saveData[sender.name].mul)-money)+"</money> because of their multiplier)" : ""}`);
+                // ${saveData[sender.name].mul != 1 ? "(<money>+$"+((money*saveData[sender.name].mul)-money)+"</money> because of their multiplier)" : ""}
+                io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> begs and finds a rich man who gives them <money>$${money*saveData[sender.name].mul}</money>`);
                 socket.emit("do",`Beg|${choice(people)} ${choice(goodSentence)} $${money} ${saveData[sender.name].mul != 1 ? "&(+$"+((money*saveData[sender.name].mul)-money)+" because of your multiplier)" : "&Your nice grandma got you this money, don't spend it all at once!"}|[Success]|${money*saveData[sender.name].mul} dollars`);
                 //setMoney(sender,getMoney(sender)+money*saveData[sender.name].mul);
                 saveData[sender.name].money += money*saveData[sender.name].mul;
             }else {
                 let money = random(5,100);
-                io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> begs and receives <money>$${money}</money> ${saveData[sender.name].mul != 1 ? "(<money>+$"+((money*saveData[sender.name].mul)-money)+"</money> because of their multiplier)" : ""}`);
+                //${saveData[sender.name].mul != 1 ? "(<money>+$"+((money*saveData[sender.name].mul)-money)+"</money> because of their multiplier)" : ""}
+                io.emit("chat",`<a onclick="nameClick(event)">${sender.name}</a> begs and receives <money>$${money*saveData[sender.name].mul}</money>`);
                 socket.emit("do",`Beg|${choice(people)} ${choice(goodSentence)} $${money} ${saveData[sender.name].mul != 1 ? "&(+$"+((money*saveData[sender.name].mul)-money)+" because of your multiplier)" : ""}|[Success]|${money*saveData[sender.name].mul} dollars`);
                 //setMoney(sender,getMoney(sender)+money*saveData[sender.name].mul);   
                 saveData[sender.name].money += money*saveData[sender.name].mul; 
@@ -1062,7 +1091,7 @@ function did(msg,socket,person,callback) {
         embed.addField("!Q work youtuber","you can work as a youtuber for tons of cash but it takes a while");
         embed.addField("!Q work prostitute","you can work as a prostitute for tons of cash but you might get an std :trole:");
         message.channel.send(embed);
-    } 
+    }
     
     /*if(msg.includes("stats")) {
         message.channel.startTyping(); 
@@ -1120,7 +1149,19 @@ function did(msg,socket,person,callback) {
     }*/
     
     if(msg.includes("work ")) {
-        if(msg.includes("work youtuber")) {
+        let job = msg.slice(5);
+        
+        let jsonName = job.split(" ").join("");
+
+        //console.log(job,jsonName);
+
+        if(!saveData[sender.name][jsonName] && !saveData[sender.name].jail && !saveData[sender.name].work) {
+            if(jobs.get(job)) {
+                jobs.get(job).useCallback(sender);            
+            }
+        }
+
+        /*if(msg.includes("work youtuber")) {
             workYoutuber(sender,random(4,6)*60,message.channel);
         }
         if(msg.includes("work mcdonalds")) {
@@ -1128,7 +1169,7 @@ function did(msg,socket,person,callback) {
         }
         if(msg.includes("work prostitute")) {
             workProstitute(sender,0,message.channel);
-        }
+        }*/
     }
     
     /*if(msg.includes("leaderboard")) {
@@ -1212,7 +1253,7 @@ function did(msg,socket,person,callback) {
             //embed.addField(`<:cringe:698772260840013856> last place: ${last.name} - ${getTier(last.name)} Tier`,`__${getMoney(last.name)} Susness__`)
         }
         message.channel.send(embed);
-    }
+    }*/
 
     if(msg.includes("money")) {
         
@@ -1224,29 +1265,25 @@ function did(msg,socket,person,callback) {
             }*/
             //moneyChanged = true;
             //socket.emit("money",saveData[sender.name].money+"|"+saveData[sender.name].bankMoney)
-       // }else {
+        }else {
             /*if(saveData[person.name].money != 0) {
                 message.channel.send(embedGreen("💵Wallet💵","their balance is "+saveData[person.name].money));
             }else {
                 message.channel.send(embedRed("💵Wallet💵","lmao they don't have any money in their pockets"));
             }*/
             //socket.emit("anotherMoney",saveData[person.name].money+"|"+saveData[person.name].bankMoney);
-            //if(callback) {
+            if(callback) {
                 callback(saveData[person.name].money+"|"+saveData[person.name].bankMoney);
-            //}else {
-                socket.emit('do','Money|NIGGER WHERE THE FUCK IS THE CALLBACK&NIGGERS NEVER LEARN|[Fail]|-21 dollars');
-           // }
-        //}
-    //}
+            }
+        }
+    }
 
     //if(msg.includes("make21")) {
     //      let number = Number(msg.split(" ")[2]);
     //    socket.emit('do',"just do " + (number < 21 ? `${number}+${Math.abs(number-21)}` : `${number}-${number-21}`));
     //}
     
-    if(msg.includes("eval")) {
-        eval(msg.slice(5));
-    }
+    
 
     if(msg.includes("hack")) {
         //console.log(msg.slice(5));
@@ -1277,11 +1314,11 @@ function did(msg,socket,person,callback) {
 
     if(moneyChanged || lastMoneys[sender.name].split("|")[0] != saveData[sender.name].money || lastMoneys[sender.name].split("|")[1] != saveData[sender.name].bankMoney) {
         socket.emit("money",saveData[sender.name].money+"|"+saveData[sender.name].bankMoney);
-        changedShit[sender.name] = saveData[sender.name].money+"|"+saveData[sender.name].bankMoney;
+        changedShit[sender.name] = {money: saveData[sender.name].money, bankMoney: saveData[sender.name].bankMoney}//saveData[sender.name].money+"|"+saveData[sender.name].bankMoney;
     }
     if(person && (lastMoneys[person.name].split("|")[0] != saveData[person.name].money || lastMoneys[person.name].split("|")[1] != saveData[person.name].bankMoney)) {
         person.socket.emit("money",saveData[person.name].money+"|"+saveData[person.name].bankMoney);
-        changedShit[person.name] = saveData[person.name].money+"|"+saveData[person.name].bankMoney;
+        changedShit[person.name] = {money: saveData[person.name].money, bankMoney: saveData[person.name].bankMoney};
     }
     if(Object.keys(changedShit).length != 0) {
         io.emit("moneyUpdate",changedShit);
@@ -1345,7 +1382,7 @@ io.sockets.on('connection',function(socket) {
         
         //print(player);
     });
-
+    //CFrame = Vector3.new(5,51,1);
     socket.on("do",function(msg,callback) {
         if(msg.includes("|")) {
             did(msg.split("|")[0],socket,msg.split("|")[1],callback);
@@ -1358,9 +1395,9 @@ io.sockets.on('connection',function(socket) {
         }
     });
 
-    socket.on("jobs",function() {
+    //socket.on("jobs",function() {
         
-    });
+    //});
 
     /*socket.on("items",function() {
         let localItems = [];
@@ -1478,6 +1515,21 @@ setInterval(()=>{
                 }
 
                 console.log(plr.name+" ghostSteal time "+result);
+            }
+            if(saveData[plr.name].work) {
+                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].work))*-1;
+
+                if(numbers <= 0) {
+                    delete saveData[plr.name].work;
+                }
+
+                if((numbers % 60) == 0 || (numbers % 60) == 1 || (numbers % 60) == 2 || (numbers % 60) == 3 || (numbers % 60) == 4 || (numbers % 60) == 5 || (numbers % 60) == 6 || (numbers % 60) == 7 || (numbers % 60) == 8 || (numbers % 60) == 9) {
+                    result = `${Math.floor(numbers / 60)}:0${numbers % 60}`;
+                }else {
+                    result = `${Math.floor(numbers / 60)}:${numbers % 60}`;
+                }
+
+                console.log(plr.name+" work time "+result);
             }
         });
     }
