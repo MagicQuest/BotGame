@@ -146,32 +146,84 @@ addJob("youtuber","$1 - $55000 (with luck $55000 - $75000)","4 - 6 minutes",(sen
         //setMoney(person,getMoney(person)+money);
         //waitToWork(person,time,channel);
         saveData[sender.name].money += money;
-        saveData[sender.name].work = (Date.now()/1000)+(random(4,6)*60);
 
         io.emit("chat",`${sender.name} made a youtube video and made <money>$${money}</money> with ${views} views`);
         sender.socket.emit("do",`Work|As a youtuber ${text}|[Success]|${money} dollars`);
+
+        saveData[sender.name].work = {time: (Date.now()/1000)+(4*60), duration: 4*60};
+        sender.socket.emit("timer",{t: wait,n: "work",st: Math.trunc(new Date().getTime()/1000)});
     //}
 });
 addJob("mcdonalds","$120 - $1080 (with luck $720 - $2160)","3 minutes",(sender) => {
     
     //setTimeout(function() {
-        let hours = random(1,9);
-        let money = hours*120;//*saveData[sender.name].mul;
-        let text = "you made <money>"+ money +"</money> dollars";
-        if(random(0,saveData[sender.name].luck)==1) {
-            hours = random(3,9);
-            money = hours*240;//*saveData[sender.name].mul;
-            text = "lots of customers came to mcdonalds today so you made an extra <money>"+ money +"</money> dollars"
-        }
-        let mulMoney = money * saveData[sender.name].mul;
-        saveData[sender.name].money += mulMoney;
+    let hours = random(1,9);
+    let money = hours*120;//*saveData[sender.name].mul;
+    let text = "you made <money>"+ money +"</money> dollars";
+    if(random(0,saveData[sender.name].luck)==1) {
+        hours = random(3,9);
+        money = hours*240;//*saveData[sender.name].mul;
+        text = "lots of customers came to mcdonalds today so you made an extra <money>"+ money +"</money> dollars"
+    }
+    let mulMoney = money * saveData[sender.name].mul;
+    saveData[sender.name].money += mulMoney;
 
-        io.emit("chat",`${sender.name} worked at mcdonalds and made <money>${mulMoney}</money> for working ${hours} hours`);
-        sender.socket.emit("do",`Work|At mcdonalds ${text}${saveData[sender.name].mul != 1 ? "&+"+(mulMoney-money)+" from your multiplier" : ""}|[Success]|${mulMoney} dollars`);
-        //waitToWork(person,5*60,channel);
-        saveData[sender.name].work = (Date.now()/1000)+(3*60);
+    io.emit("chat",`${sender.name} worked at mcdonalds and made <money>${mulMoney}</money> for working ${hours} hours`);
+    sender.socket.emit("do",`Work|At mcdonalds ${text}${saveData[sender.name].mul != 1 ? "&+"+(mulMoney-money)+" from your multiplier" : ""}|[Success]|${mulMoney} dollars`);
+    //waitToWork(person,5*60,channel);
+    saveData[sender.name].work = {time: (Date.now()/1000)+(3*60), duration: 3*60};
+    sender.socket.emit("timer",{t: wait,n: "work",st: Math.trunc(new Date().getTime()/1000)});
 
     //},time*1000)
+});
+addJob("prostitute", "$120312 - 21301 (with luck $3409 - 3432)","3 miunt", (sender) => {
+    let money = random(1,10)*500;//*userData[person.id].mul;
+    //let rich = false;
+    let text = "you made <money>" + money + "</money> dollars";
+    let wait = 5*60;
+    let trolled = false;
+    
+    if(random(0,saveData[sender.name].luck)==1) {
+        money = random(1,10)*1200;//*userData[person.id].mul;
+        //rich = true;
+        text = "you were fortunate enough to find a rich guy by the name of bernard and made <money>"+ money +"</money> dollars";
+    }
+    
+    let mulMoney = money*saveData[sender.name].mul;
+    
+    //if(rich) {
+    //    text = "you were fortunate enough to find a rich guy by the name of bernard and made <money>"+ money +"</money> dollars";
+    //}else {
+    //    text = "you made <money>"+ money +"</money> dollars";
+    //}
+    
+    saveData[sender.name].money += mulMoney;
+    
+    if(random(1,4) < 3) {
+        trolled = true;
+
+        text+=`<br><b>but you just found out that you contracted an <u>STD</u></b> you must stop working for a while and pay <moneyRed>1000</moneyRed> dollars for your medical bill`;
+        
+        money -= 1000;
+        mulMoney -= 1000;//*saveData[sender.name].mul;
+
+        /*if(saveData[sender.name].money >= 1000) {
+            saveData[sender.name].money -= 1000;
+        }else if(saveData[sender.name].bankMoney >= 1000){
+            saveData[sender.name].bankMoney -= 1000;
+        }else {
+            saveData[sender.name].money -= 1000;
+        }*/
+
+        wait = 6*60
+    }
+
+    io.emit("chat",`${sender.name} worked as a prostitute and made <money>${mulMoney}</money> dollars${trolled ? " but got an STD lol" : ""}`);
+    sender.socket.emit("do",`Work|As a prostitute ${text}${saveData[sender.name].mul != 1 ? "&+"+(mulMoney-money)+" from your multiplier" : ""}|[Success]|${mulMoney} dollars`);
+
+    saveData[sender.name].work = {time: (Date.now()/1000)+(wait), duration: wait};
+    sender.socket.emit("timer",{t: wait,n: "work",st: Math.trunc(new Date().getTime()/1000)});
+    //waitToWork(person,wait,channel);
 });
 
 addItem("reverse card|🃏Reverse card🃏",10000,"use this card when you have gotten robbed to steal money from the stealer (Ex: !Q buy reverse card)",false,(sender)=>{
@@ -229,7 +281,7 @@ addItem("reverse card|🃏Reverse card🃏",10000,"use this card when you have g
 addItem("ghost steal|🏃‍♂️GhostSteal🏃‍♂️",100000,"you can steal from anybody in 15 seconds (Ex: !Q buy ghost steal)",false,(sender)=>{
     //let sender = players[socket.id];
     saveData[sender.name].inventory.ghoststeal -= 1;
-    saveData[sender.name].ghostSteal = (Date.now()/1000)+15
+    saveData[sender.name].ghostSteal = {time: (Date.now()/1000)+15, duration: 15};
     //sender.socket.emit("time",`${}`);
     //saveData[sender.name].ghostSteal = true;
     //message.channel.send("you have successfully used the ghost steal");
@@ -241,7 +293,7 @@ addItem("bank breaker|🔨BankBreaker🔨",250000,"for 15 seconds you can break 
     //let sender = players[data.socket.id];
     //let person = data.person;
     saveData[sender.name].inventory.bankbreaker -= 1;
-    saveData[person.name].bankBreaker = (Date.now()/1000)+15;
+    saveData[person.name].bankBreaker = {time: (Date.now()/1000)+15, duration: 15};
     //saveData[person.name].bankbreaker = true;
     //message.channel.send(`you have successfully used the bank breaker on ${person.username}`);
     sender.socket.emit("timer",{info: `Use Item|You used the bank breaker on ${person.name}&Trollin', just trollin'|[Success]|`,n: "bankBreaker",t: 15,st: Math.trunc(new Date().getTime()/1000)});
@@ -926,7 +978,7 @@ function did(msg,socket,person,callback) {
                             saveData[sender.name].money -= money;
                         }
                         //message.channel.send(embedRed("👮Cops👮","lmao you got arrested for stealing like a fool shake my smh"));
-                        saveData[sender.name].jail = (Date.now()/1000)+180;
+                        saveData[sender.name].jail = {time: (Date.now()/1000)+180, duration: 180};
                         //socket.emit('embed',`Stealing|lmao you got arrested for stealing like a fool shake my smh|Ok&Modal`);
                         socket.emit("timer",{t: 180,n: "jail",e: `Stealing|lmao you got arrested for stealing like a fool shake my smh|Ok&Modal`,st: Math.trunc(new Date().getTime()/1000)});
                         //jailTime(sender,3,message.channel);
@@ -969,7 +1021,7 @@ function did(msg,socket,person,callback) {
                         saveData[sender.name].money -= money;
                         //setMoney(sender,getMoney(sender)-money);
                     }
-                    saveData[sender.name].jail = (Date.now()/1000)+180;
+                    saveData[sender.name].jail = {time: (Date.now()/1000)+180, duration: 180};
                     socket.emit("timer",{t: 180,n: "jail",e: `Stealing|lmao you got arrested for stealing like a fool shake my smh|Ok&Modal`,st: Math.trunc(new Date().getTime()/1000)});
                     io.emit('chat',`<a onclick="nameClick(event)">${sender.name}</a> tried stealing from <a onclick="nameClick(event)">${person.name}</a> but got arrested`);
                 }
@@ -1377,7 +1429,25 @@ io.sockets.on('connection',function(socket) {
         players.forEach((plr)=>{
             peoples[plr.name] = `${saveData[plr.name].money}|${saveData[plr.name].bankMoney}`;
         });
-        callback({name: name,money: saveData[player.name].money+"|"+saveData[player.name].bankMoney, players: peoples});
+        
+        let timers = {};
+        if(saveData[player.name].jail) {
+            timers.jail = saveData[player.name].jail;
+        }
+        if(saveData[player.name].stealer) {
+            timers.stealer = saveData[player.name].stealer;
+        }
+        if(saveData[player.name].bankBreaker) {
+            timers.bankBreaker = saveData[plr.name].bankBreaker;
+        }player
+        if(saveData[player.name].ghostSteal) {
+            timers.ghostSteal = saveData[player.name].ghostSteal;
+        }
+        if(saveData[player.name].work) {
+            timers.work = saveData[player.name].work;
+        }
+
+        callback({name: name,money: saveData[player.name].money+"|"+saveData[player.name].bankMoney, players: peoples, timers: timers});
         //socket/*.broadcast*/.emit("start",{name: name, money: saveData[player.name].money+"|"+saveData[player.name].bankMoney, players: peoples});
         
         //print(player);
@@ -1457,7 +1527,7 @@ setInterval(()=>{
                 lastMoneys[plr.name] = saveData[plr.name].money+"|"+saveData[plr.name].bankMoney;
             }*/
             if(saveData[plr.name].jail) {
-                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].jail))*-1;
+                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].jail.time))*-1;
 
                 if(numbers <= 0) {
                     delete saveData[plr.name].jail;
@@ -1487,7 +1557,7 @@ setInterval(()=>{
                 console.log(plr.name+" stealer time "+result);
             }
             if(saveData[plr.name].bankBreaker) {
-                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].bankBreaker))*-1;
+                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].bankBreaker.time))*-1;
 
                 if(numbers <= 0) {
                     delete saveData[plr.name].bankBreaker;
@@ -1502,7 +1572,7 @@ setInterval(()=>{
                 console.log(plr.name+" bank brewakrt time "+result);
             }
             if(saveData[plr.name].ghostSteal) {
-                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].ghostSteal))*-1;
+                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].ghostSteal.time))*-1;
 
                 if(numbers <= 0) {
                     delete saveData[plr.name].ghostSteal;
@@ -1517,7 +1587,7 @@ setInterval(()=>{
                 console.log(plr.name+" ghostSteal time "+result);
             }
             if(saveData[plr.name].work) {
-                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].work))*-1;
+                let numbers = (Math.floor(Date.now()/1000)-Math.floor(saveData[plr.name].work.time))*-1;
 
                 if(numbers <= 0) {
                     delete saveData[plr.name].work;

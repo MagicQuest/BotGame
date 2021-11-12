@@ -708,6 +708,12 @@
             <button class="tempButton" onclick="socket.emit('do','work mcdonalds');">
                 work mcdonalds
             </button>
+            <button class="tempButton" onclick="socket.emit('do','work prostitute');">
+                work prostitute
+            </button>
+            <button class="tempButton" onclick="socket.emit('do','eval saveData[sender.name].work = 0;');">
+                clear worktime
+            </button>
             <!--button class="tempButton" onclick="socket.emit('do','use money multiply');">
                 use money mutlipler
             </button-->
@@ -1197,6 +1203,12 @@
                                 main.style.opacity = "";
                             },1000);
                         }
+                        for(let timerName in data.timers) {
+                            let timer = data.timers[timerName];
+
+                            createTimer(timerName, timer.time-timer.duration, timer.duration); //LETS GO BRUH I ONLY HAD TO TEST IT LIKE TWICE (plus i didn't think it was gonna work lol i think it did ok)
+                            //LETS GO IT ACTUALLY WORKS FOR A NORMAL PERIOD OF TIME (had to wait like 5 minutes lol)
+                        }
                     }
                 });
             }
@@ -1217,6 +1229,16 @@
             let hasTag = info.split("|")[1].includes("&");
             createNote(info.split("|")[0],hasTag ? info.split("|")[1].split("&")[0] : info.split("|")[1],!hasTag ? undefined : info.split("|")[1].split("&")[1],info.split("|")[2],info.split("|")[3]);
         });
+
+        function createTimer(timerName, start, t) {
+            let timerParent = document.createElement("div");
+            timerParent.className = "crate";
+            timerParent.style.backgroundImage = `url('stuff/img/${timerName}.png')`;
+            timerParent.style.backgroundPosition = 'center';
+            timerParent.innerHTML = timercopy.innerHTML.replace("copy",timerName);
+            moneyCenter.appendChild(timerParent);
+            timers[timerName] = {time: t,endTime: start+t};
+        }
         
         socket.on("timer",(timeInfo)=>{
                 let timerName = timeInfo.n;
