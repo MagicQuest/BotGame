@@ -151,7 +151,7 @@ addJob("youtuber","$1 - $55000 (with luck $55000 - $75000)","4 - 6 minutes",(sen
         sender.socket.emit("do",`Work|As a youtuber ${text}|[Success]|${money} dollars`);
 
         saveData[sender.name].work = {time: (Date.now()/1000)+(4*60), duration: 4*60};
-        sender.socket.emit("timer",{t: wait,n: "work",st: Math.trunc(new Date().getTime()/1000)});
+        sender.socket.emit("timer",{t: (4*60),n: "work",st: Math.trunc(new Date().getTime()/1000)});
     //}
 });
 addJob("mcdonalds","$120 - $1080 (with luck $720 - $2160)","3 minutes",(sender) => {
@@ -172,7 +172,7 @@ addJob("mcdonalds","$120 - $1080 (with luck $720 - $2160)","3 minutes",(sender) 
     sender.socket.emit("do",`Work|At mcdonalds ${text}${saveData[sender.name].mul != 1 ? "&+"+(mulMoney-money)+" from your multiplier" : ""}|[Success]|${mulMoney} dollars`);
     //waitToWork(person,5*60,channel);
     saveData[sender.name].work = {time: (Date.now()/1000)+(3*60), duration: 3*60};
-    sender.socket.emit("timer",{t: wait,n: "work",st: Math.trunc(new Date().getTime()/1000)});
+    sender.socket.emit("timer",{t: (3*60),n: "work",st: Math.trunc(new Date().getTime()/1000)});
 
     //},time*1000)
 });
@@ -202,7 +202,7 @@ addJob("prostitute", "$120312 - 21301 (with luck $3409 - 3432)","3 miunt", (send
     if(random(1,4) < 3) {
         trolled = true;
 
-        text+=`<br><b>but you just found out that you contracted an <u>STD</u></b> you must stop working for a while and pay <moneyRed>1000</moneyRed> dollars for your medical bill`;
+        text+=`<br><b>but you just found out that you contracted an <u>STD</u></b><br>you must stop working for a while and pay <moneyRed>1000</moneyRed> dollars for your medical bill`;
         
         money -= 1000;
         mulMoney -= 1000;//*saveData[sender.name].mul;
